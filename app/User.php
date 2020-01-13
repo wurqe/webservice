@@ -5,10 +5,14 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Wallet;
+use Bavix\Wallet\Traits\CanPay;
+use Bavix\Wallet\Interfaces\Customer;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Wallet, Customer
 {
-    use Notifiable;
+    use Notifiable, HasWallet, CanPay;
 
     /**
      * The attributes that are mass assignable.
