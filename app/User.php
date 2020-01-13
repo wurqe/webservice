@@ -12,10 +12,11 @@ use Bavix\Wallet\Interfaces\Customer;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia
 {
-  use Notifiable, HasWallet, CanPay, HasMediaTrait;
+  use Notifiable, HasWallet, CanPay, HasMediaTrait, HasApiTokens;
 
   public function interests(){
     return $this->belongsToMany(Interest::class, 'interest_users')->withTimestamps();
