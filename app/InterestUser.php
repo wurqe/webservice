@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class InterestUser extends Model
+class InterestUser extends Pivot
 {
-    //
+  protected $hidden = ["pivot"];
 }

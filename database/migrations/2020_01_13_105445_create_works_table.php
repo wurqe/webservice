@@ -19,8 +19,8 @@ class CreateWorksTable extends Migration
       $table->bigInteger('other_user_id')->unsigned();
       $table->enum('status', ['pending', 'compeleted', 'canceled'])->default('pending');
       $table->enum('payment_method', ['wurqe', 'cash'])->default('wurqe');
-      $table->decimal('price', 9,3)->nullable();
-      $table->string('price_currency')->default('$');
+      $table->decimal('amount', 9,3)->nullable();
+      $table->string('amount_currency')->default('$');
       $table->dateTime('completed_at')->nullable();
       $table->timestamps();
     });

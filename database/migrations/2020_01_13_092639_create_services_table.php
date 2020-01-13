@@ -21,9 +21,10 @@ class CreateServicesTable extends Migration
         $table->longText('description');
         $table->enum('payment_type', ['fixed', 'hourly', 'flexible'])->default('fixed');
         $table->boolean('negotiable')->default(false);
-        $table->decimal('price', 9,3)->nullable();
+        $table->decimal('amount', 9,3)->nullable();
         $table->longText('terms')->nullable();
         $table->string('timeframe')->nullable();
+        $table->softDeletes();
         $table->timestamps();
       });
 

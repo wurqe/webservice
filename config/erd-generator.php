@@ -7,7 +7,11 @@ return [
      * By default, the `app` directory will be scanned recursively for models.
      */
     'directories' => [
-        base_path('database'),
+        base_path('app'),
+        base_path("vendor/spatie/laravel-tags/src"),
+        base_path("vendor/spatie/laravel-medialibrary/src/Models"),
+        base_path("vendor/codebyray/laravel-review-rateable/src/Models"),
+        base_path("vendor/bavix/laravel-wallet/src/Models"),
     ],
 
     /*
@@ -19,6 +23,8 @@ return [
      */
     'ignore' => [
         // User::class,
+        App\InterestUser::class,
+        Bavix\Wallet\Models\Transfer::class,
         // Post::class => [
         //     'user'
         // ]
@@ -86,7 +92,7 @@ return [
     ],
 
     'edge' => [
-        'color' => '#003049',
+        'color' => '#10929B',
         'penwidth' => 1.8,
         'fontname' => 'Helvetica Neue'
     ],
