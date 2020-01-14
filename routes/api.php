@@ -19,8 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => 'localization'], function(){
   // api endpoints
-  Route::post('login', 'UserController@login');
-  Route::post('register', 'UserController@create');
+  Route::post('login', 'Auth\LoginController@login');
+  Route::post('register', 'Auth\RegisterController@register');
+  // test resource
+  // Route::resource('tests', 'TestController');
 
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
@@ -33,5 +35,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('notifications', 'NotificationController');
     Route::resource('services', 'ServiceController');
     Route::resource('works', 'WorkController');
+    // test resource
+    Route::resource('tests', 'TestController');
   });
 });
