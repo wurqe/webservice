@@ -16,3 +16,22 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['middleware' => 'localization'], function(){
+  // api endpoints
+  Route::post('login', 'UserController@login');
+  Route::post('register', 'UserController@create');
+
+  // auth endpoints
+  Route::group(['middleware' => ['auth:api']], function(){
+    // resources
+    Route::resource('users', 'UserController');
+    Route::resource('settings', 'SettingController');
+    Route::resource('interests', 'InterestController');
+    Route::resource('categories', 'CategoryController');
+    Route::resource('invitations', 'InvitationController');
+    Route::resource('notifications', 'NotificationController');
+    Route::resource('services', 'ServiceController');
+    Route::resource('works', 'WorkController');
+  });
+});
