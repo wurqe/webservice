@@ -14,6 +14,7 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
         "laravel/passport": "^8.2",
+        "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
         "spatie/laravel-medialibrary": "^7.18",
         "spatie/laravel-tags": "^2.5"
