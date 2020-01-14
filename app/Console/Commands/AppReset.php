@@ -54,6 +54,7 @@ class AppReset extends Command
       // $output['dbSeed'] = Artisan::call('db:seed');
       // print("seeded db\n");
       // $output['MigrateDB'] = Artisan::call('migrate');
+      // print("migrated db\n");
       Log::debug($output);
       print_r($output);
     }
