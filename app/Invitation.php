@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invitation extends Model
 {
-  protected $fillable = ["user_id", "service_id", "comment", 'status'];
+  protected $fillable = ['hired', "user_id", "service_id", "comment", 'status'];
+
+  public function initaiteContract() {
+    return $this->update(['hired' => 1]);
+  }
+
+  public function isAccepted() {
+    return $this->status == 'accepted';
+  }
 
   public function user(){
     return $this->BelongsTo(User::class);

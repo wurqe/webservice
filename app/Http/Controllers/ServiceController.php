@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Service;
+use App\Invitation;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -147,25 +148,13 @@ class ServiceController extends Controller
      * @param  \App\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function hire(Request $request, Service $service)
+    public function hire(Request $request, Invitation $invitation)
     {
-      // $this->authorize('hire', $service);
-      // $request->validate([
-      //   'message'         => '',
-      // ]);
-      //
-      // $user = $request->user();
-      //
-      // // check pending invitation
-      // $pending = $user->pending_invitaions()->where('services.user_id', $service->user_id)->first();
-      //
-      // return [$pending];
-      //
-      // // message interface
-      // // --------->
-      //
-      // $invitation = $user->invite($service);
-      //
-      // return [];
+      $this->authorize('hire', $invitation);
+      $user = $request->user();
+      // check accepted invitation
+      if (!$invitation->isAccepted()) return ['status' => false, 'message' => trans('msg.service.not_hired')];
+      $invitation->initaiteContract();
+      return ['status' => true, 'message' => trans('msg.service.hired'), 'invitaion' => $invitation];
     }
 }

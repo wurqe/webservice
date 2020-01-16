@@ -92,4 +92,16 @@ class InvitationPolicy
     {
         //
     }
+
+    /**
+     * Determine whether the user can permanently delete the invitation.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Invitation  $invitation
+     * @return mixed
+     */
+    public function hire(User $user, Invitation $invitation)
+    {
+      return $user->id == $invitation->user_id;
+    }
 }
