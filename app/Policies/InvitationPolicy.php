@@ -94,7 +94,7 @@ class InvitationPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete the invitation.
+     * Determine whether the user is the sender of the invitation.
      *
      * @param  \App\User  $user
      * @param  \App\Invitation  $invitation
@@ -103,5 +103,18 @@ class InvitationPolicy
     public function hire(User $user, Invitation $invitation)
     {
       return $user->id == $invitation->user_id;
+    }
+
+    /**
+     * Determine whether the user can start the invitation service work.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Invitation  $invitation
+     * @return mixed
+     */
+    public function work(User $user, Invitation $invitation)
+    {
+      return $user->id == $invitation->user_id
+          && $invitation->hired;
     }
 }

@@ -16,4 +16,8 @@ return [
     'not_hired'       => 'You cannot initiate contract that has not been accepted',
     'hired'           => 'Contract initiated successfully',
   ],
+  'work'              => [
+    'started'         => 'The invitation job as already started',
+    'starts'          => 'The service job started successfully',
+  ],
 ];
