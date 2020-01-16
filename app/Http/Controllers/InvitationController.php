@@ -35,7 +35,24 @@ class InvitationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'message'             => '',
+        'service_id'          => 'required|numeric',
+      ]);
+
+      $user = $request->user();
+      $service = \App\Service::findOrFail($request->service_id);
+
+      // check pending invitation
+      $pending = $user->pending_invitaions()->where('service_id', $service->id)->first();
+      if($pending) return ['status' => false, 'message' => trans('msg.invitation.pending')];
+
+      // message interface
+      // --------->
+
+      $invitation = $user->invite($service);
+
+      return ['status' => true, 'invitation' => $invitation, 'message' => trans('msg.invitation.sent')];
     }
 
     /**
