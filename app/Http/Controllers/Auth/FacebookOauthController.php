@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Socialite;
@@ -41,7 +42,7 @@ class FacebookOauthController extends Controller
             // if user does not exists
          $createUser = User::create([
              'name'=>$user->getName(),
-             'email'=>$user->getEmail(), 
+             'email'=>$user->getEmail(),
          ]);
          $accessToken = $createUser->createToken('authToken')->accessToken;
          return redirect()->to($url.'?token='.$accessToken.'userId='.$createUser->id); //redirect to users dashboard;

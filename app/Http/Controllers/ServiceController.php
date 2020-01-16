@@ -27,7 +27,7 @@ class ServiceController extends Controller
       $pageSize       = $request->pageSize;
       $type           = $request->type ?? 'seek';
 
-      $services = Service::with('skills')->where('type', $type);
+      $services = Service::where('user_id', '!=', $user->id)->where('type', $type)->with('skills');
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
 
@@ -139,5 +139,33 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Service  $service
+     * @return \Illuminate\Http\Response
+     */
+    public function hire(Request $request, Service $service)
+    {
+      // $this->authorize('hire', $service);
+      // $request->validate([
+      //   'message'         => '',
+      // ]);
+      //
+      // $user = $request->user();
+      //
+      // // check pending invitation
+      // $pending = $user->pending_invitaions()->where('services.user_id', $service->user_id)->first();
+      //
+      // return [$pending];
+      //
+      // // message interface
+      // // --------->
+      //
+      // $invitation = $user->invite($service);
+      //
+      // return [];
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invitation extends Model
 {
-  protected $hidden = ["user_id", "service_id", "comment", 'status'];
+  protected $fillable = ["user_id", "service_id", "comment", 'status'];
 
   public function user(){
     return $this->BelongsTo(User::class);
