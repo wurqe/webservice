@@ -6,15 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
-use \Spatie\Tag;
+// use Spatie\Tags\Tag;
 use \getID3;
 use App\Media as MMedia;
+// use Tag;
 
 class Service extends Model implements HasMedia
 {
   use \Spatie\Tags\HasTags, HasMediaTrait;
 
   protected $fillable = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
+
+  protected $hidden = ['pivot'];
 
   public function addMeta($metas){
     $meta = $this->metas()->updateOrCreate($metas);
@@ -61,7 +64,7 @@ class Service extends Model implements HasMedia
   }
 
   public function skills(){
-    return $this->belongsToMany(Tag::class, 'taggables');
+    return $this->belongsToMany(Tag::class, 'taggables', 'taggable_id');
   }
 
   public function user(){

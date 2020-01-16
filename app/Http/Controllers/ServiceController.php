@@ -12,9 +12,26 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $request->validate([
+        'type'          => ['regex:(seek|provide)'],
+        'search'        => '',
+        'orderBy'       => ['regex:(title)'],
+        'pageSize'      => 'numeric',
+      ]);
+
+      $user           = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+      $type           = $request->type ?? 'seek';
+
+      $services = Service::with('skills')->where('type', $type);
+
+      if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
+
+      return $services->paginate($pageSize ?? null);
     }
 
     /**
