@@ -36,7 +36,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('invitations', 'InvitationController');
     Route::resource('notifications', 'NotificationController');
     Route::resource('services', 'ServiceController');
-    Route::resource('works', 'WorkController');
+    Route::resource('jobs', 'WorkController');
 
     // endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
