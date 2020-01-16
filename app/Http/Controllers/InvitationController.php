@@ -86,7 +86,23 @@ class InvitationController extends Controller
      */
     public function update(Request $request, Invitation $invitation)
     {
-        //
+      $this->authorize('update', $invitation);
+      $request->validate([
+        'action' => ['required', 'regex:(accepted|rejected|canceled)'],
+      ]);
+      $user = $request->user();
+      $action = $request->action;
+      // if the user is the invitation sender
+      if ($invitation->user_id == $user->id) {
+        // sender can only cancel invitaion
+        if ($action == 'canceled') $invitation->update(['status' => $action]);
+        else $this->unauthorizedExe(trans('msg.invitation.only_cancel'));
+      } else {
+        // receiver can only accept or decline invitaion
+        if (in_array($action, ['accepted', 'rejected'])) $invitation->update(['status' => $action]);
+        else $this->unauthorizedExe(trans('msg.invitation.only_attempt'));
+      }
+      return ['status' => true, 'message' => trans('msg.invitation.updated'), 'invitaion' => $invitation];
     }
 
     /**
@@ -98,5 +114,10 @@ class InvitationController extends Controller
     public function destroy(Invitation $invitation)
     {
         //
+    }
+
+    protected function unauthorizedExe($message = 'This action is unauthorized.') {
+      abort(403, $message);
+      //\Illuminate\Auth\Access\UnauthorizedException;
     }
 }
