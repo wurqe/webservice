@@ -102,7 +102,7 @@ class InvitationController extends Controller
         if (in_array($action, ['accepted', 'rejected'])) $invitation->update(['status' => $action]);
         else $this->unauthorizedExe(trans('msg.invitation.only_attempt'));
       }
-      return ['status' => true, 'message' => trans('msg.invitation.updated'), 'invitaion' => $invitation];
+      return ['status' => true, 'message' => trans('msg.invitation.updated'), 'invitation' => $invitation];
     }
 
     /**
@@ -114,10 +114,5 @@ class InvitationController extends Controller
     public function destroy(Invitation $invitation)
     {
         //
-    }
-
-    protected function unauthorizedExe($message = 'This action is unauthorized.') {
-      abort(403, $message);
-      //\Illuminate\Auth\Access\UnauthorizedException;
     }
 }

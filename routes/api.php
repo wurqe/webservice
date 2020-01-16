@@ -39,7 +39,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('works', 'WorkController');
 
     // endpoints
-    // Route::post('services/invitaions/{service}', 'ServiceController@hire');
+    Route::put('services/hire/{invitation}', 'ServiceController@hire');
 
     // test resource
     Route::resource('tests', 'TestController');
