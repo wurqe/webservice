@@ -98,7 +98,28 @@ class WorkController extends Controller
      */
     public function update(Request $request, Work $work)
     {
-        //
+      $this->authorize('update', $work);
+
+      // $work->complete();
+      // return ['status' => true, 'message' => trans('msg.work.completed')];
+    }
+
+    /**
+     * compelete the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Work  $work
+     * @return \Illuminate\Http\Response
+     */
+    public function complete(Request $request, Work $work)
+    {
+      $this->authorize('complete', $work);
+
+      // check work completed
+      if($completed = $work->isCompleted()) return ['status' => false, 'work' => $work, 'message' => trans('msg.work.completed')];
+
+      $work->complete();
+      return ['status' => true, 'work' => $work, 'message' => trans('msg.work.completes')];
     }
 
     /**

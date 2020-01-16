@@ -58,6 +58,18 @@ class WorkPolicy
     }
 
     /**
+     * Determine whether the user can complete the work.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Work  $work
+     * @return mixed
+     */
+    public function complete(User $user, Work $work)
+    {
+      return $work->invitation->user_id = $user->id;
+    }
+
+    /**
      * Determine whether the user can delete the work.
      *
      * @param  \App\User  $user

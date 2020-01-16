@@ -17,7 +17,7 @@ class CreateWorksTable extends Migration
       $table->bigIncrements('id');
       $table->bigInteger('service_id')->unsigned();
       $table->bigInteger('invitaion_id')->unsigned();
-      $table->enum('status', ['pending', 'compeleted', 'canceled'])->default('pending');
+      $table->enum('status', ['pending', 'completed', 'canceled'])->default('pending');
       $table->enum('payment_method', ['wurqe', 'cash'])->default('wurqe');
       $table->decimal('amount', 9,3)->nullable();
       $table->string('amount_currency')->default('$');

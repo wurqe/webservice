@@ -19,5 +19,6 @@ return [
   'work'              => [
     'started'         => 'The invitation job as already started',
     'starts'          => 'The service job started successfully',
+    'completes'       => 'The service job completed successfully',
   ],
 ];
