@@ -25,18 +25,23 @@ Route::group(['middleware' => 'localization'], function(){
   Route::post('register', 'Auth\RegisterController@register');
   // test resource
   // Route::resource('tests', 'TestController');
-
+  // guest routes
+  Route::group(['middleware' => ['guest']], function(){
+    Route::get('services', 'ServiceController@index');
+  });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
-    Route::resource('users', 'UserController');
-    Route::resource('settings', 'SettingController');
-    Route::resource('interests', 'InterestController');
-    Route::resource('categories', 'CategoryController');
-    Route::resource('invitations', 'InvitationController');
-    Route::resource('notifications', 'NotificationController');
-    Route::resource('services', 'ServiceController');
-    Route::resource('jobs', 'WorkController');
+    Route::apiResources([
+      'users'             => 'UserController',
+      'settings'          => 'SettingController',
+      'interests'         => 'InterestController',
+      'categories'        => 'CategoryController',
+      'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
+      'jobs'              => 'WorkController',
+    ]);
+    Route::resource('services', 'ServiceController')->except(['index']);
 
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');

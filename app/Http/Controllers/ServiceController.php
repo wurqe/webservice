@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
+  public function __construct(){
+  }
     /**
      * Display a listing of the resource.
      *
@@ -23,12 +25,13 @@ class ServiceController extends Controller
       ]);
 
       $user           = $request->user();
+      $user_id        = $user ? $user->id : 0;
       $search         = $request->search;
       $orderBy        = $request->orderBy;
       $pageSize       = $request->pageSize;
       $type           = $request->type ?? 'seek';
 
-      $services = Service::where('user_id', '!=', $user->id)->where('type', $type)->with('skills');
+      $services = Service::where('user_id', '!=', $user_id)->where('type', $type)->with('skills');
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
 
