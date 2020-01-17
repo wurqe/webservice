@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Socialite;
@@ -35,7 +36,7 @@ class GoogleOauthController extends Controller
         if($checkIfUserPresentInDb){
         // if user already exists
         $token = $checkIfUserPresentInDb->createToken('authToken')->accessToken;
-        return redirect()->to($url.'?userId='.$checkIfUserPresentInDb->id.'token='.$token);
+        return response(['message'=>'success','token'=>$token]);
         }else{
             // if user does not exists
          $createUser = User::create([
@@ -43,7 +44,7 @@ class GoogleOauthController extends Controller
              'email'=>$user->getEmail(), 
          ]);
          $accessToken = $createUser->createToken('authToken')->accessToken;
-         return redirect()->to($url.'?token='.$accessToken.'userId='.$createUser->id); //redirect to users dashboard;
+         return response(['message'=>'success','token'=>$accesstoken]);
         }
         }
     }
