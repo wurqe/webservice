@@ -16,3 +16,28 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['middleware' => 'localization'], function(){
+  // api endpoints
+  Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
+  Route::get('login/facebook/callback', 'Auth\FacebookOauthController@handleProviderCallback');
+  Route::post('login', 'Auth\LoginController@login');
+  Route::post('register', 'Auth\RegisterController@register');
+  // test resource
+  // Route::resource('tests', 'TestController');
+
+  // auth endpoints
+  Route::group(['middleware' => ['auth:api']], function(){
+    // resources
+    Route::resource('users', 'UserController');
+    Route::resource('settings', 'SettingController');
+    Route::resource('interests', 'InterestController');
+    Route::resource('categories', 'CategoryController');
+    Route::resource('invitations', 'InvitationController');
+    Route::resource('notifications', 'NotificationController');
+    Route::resource('services', 'ServiceController');
+    Route::resource('works', 'WorkController');
+    // test resource
+    Route::resource('tests', 'TestController');
+  });
+});

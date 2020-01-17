@@ -27,8 +27,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         Passport::routes();
         // Passport::loadKeysFrom('/secret-keys/oauth');
-        passport::$revokeOtherTokens;
-        passport::$pruneRevokedTokens;
+        Passport::$revokeOtherTokens;
+        Passport::$pruneRevokedTokens;
         //
     }
 }
