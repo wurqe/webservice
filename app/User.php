@@ -13,10 +13,24 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia
 {
   use Notifiable, HasWallet, CanPay, HasMediaTrait, HasApiTokens;
+
+  public function grantMeToken(){
+    // $this->token()->revoke();
+    $token          =  $this->createToken('MyApp');
+
+    return [
+      'token'       => $token->accessToken,
+      'token_type'  => 'Bearer',
+      'expires_at'  => Carbon::parse(
+          $token->token->expires_at
+      )->toDateTimeString(),
+    ];
+  }
 
   public function interests(){
     return $this->belongsToMany(Interest::class, 'interest_users')->withTimestamps();
@@ -60,7 +74,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
    * @var array
    */
   protected $fillable = [
-      'name', 'email', 'password',
+      'name', 'email', 'password', 'firstname', 'lastname', 'lng', 'lat'
   ];
 
   /**
