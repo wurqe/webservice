@@ -49,6 +49,10 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
     return $this->hasMany(Invitation::class, 'user_id');
   }
 
+  public function received_invitaions(){
+    return $this->hasManyThrough(Invitation::class, Service::class);
+  }
+
   public function pending_invitaions(){
     return $this->invitaions()->where('status', 'pending');
   }

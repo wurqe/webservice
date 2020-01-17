@@ -12,9 +12,27 @@ class InvitationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $request->validate([
+        'type'          => ['regex:(received|sent)'],
+        'search'        => '',
+        'pageSize'      => 'numeric',
+      ]);
+
+      $user           = $request->user();
+      $user_id        = $user ? $user->id : 0;
+      $search         = $request->search;
+      // $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+      $type           = $request->type ?? 'received';
+
+      if ($type == 'received') $invitations = $user->invitaions();
+      else $invitations = $user->received_invitaions();
+
+      // if ($search) $invitations->where('title', 'LIKE', '%'.$search.'%');
+
+      return $invitations->paginate($pageSize ?? null);
     }
 
     /**
