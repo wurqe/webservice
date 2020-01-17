@@ -19,8 +19,13 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
 {
   use Notifiable, HasWallet, CanPay, HasMediaTrait, HasApiTokens;
 
+  public function invite(Service $service){
+    return $this->invitaions()->create([
+      'service_id'    => $service->id,
+    ]);
+  }
+
   public function grantMeToken(){
-    // $this->token()->revoke();
     $token          =  $this->createToken('MyApp');
 
     return [
@@ -41,7 +46,11 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
   }
 
   public function invitaions(){
-    return $this->hasMany(Invitation::class, 'other_user_id');
+    return $this->hasMany(Invitation::class, 'user_id');
+  }
+
+  public function pending_invitaions(){
+    return $this->invitaions()->where('status', 'pending');
   }
 
   public function services(){
