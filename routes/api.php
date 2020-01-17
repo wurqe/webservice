@@ -27,6 +27,8 @@ Route::group(['middleware' => 'localization'], function(){
   Route::post('register', 'Auth\RegisterController@register');
   Route::put('UpdatePersonalInfo/{id}', 'UpdatePersonalInfoController@update');
   Route::put('ProfilePics/{id}', 'UpdatePersonalInfoController@ProfileImage');
+  Route::get('getProfile/{id}', 'UpdatePersonalInfoController@show');
+  
   // test resource
   // Route::resource('tests', 'TestController');
 
