@@ -37,10 +37,6 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
     ];
   }
 
-  public function interests(){
-    return $this->belongsToMany(Interest::class, 'interest_users')->withTimestamps();
-  }
-
   public function hire_invitations(){
     return $this->hasManyThrough(Invitation::class, Service::class);
   }
