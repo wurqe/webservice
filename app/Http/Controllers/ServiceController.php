@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Service;
+use App\Invitation;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -27,7 +28,7 @@ class ServiceController extends Controller
       $pageSize       = $request->pageSize;
       $type           = $request->type ?? 'seek';
 
-      $services = Service::with('skills')->where('type', $type);
+      $services = Service::where('user_id', '!=', $user->id)->where('type', $type)->with('skills');
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
 
@@ -139,5 +140,21 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Service  $service
+     * @return \Illuminate\Http\Response
+     */
+    public function hire(Request $request, Invitation $invitation)
+    {
+      $this->authorize('hire', $invitation);
+      $user = $request->user();
+      // check accepted invitation
+      if (!$invitation->isAccepted()) return ['status' => false, 'message' => trans('msg.service.not_hired')];
+      $invitation->initaiteContract();
+      return ['status' => true, 'message' => trans('msg.service.hired'), 'invitaion' => $invitation];
     }
 }

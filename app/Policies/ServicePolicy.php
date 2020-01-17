@@ -92,4 +92,16 @@ class ServicePolicy
     {
         //
     }
+
+    /**
+     * Determine whether the user can permanently delete the service.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Service  $service
+     * @return mixed
+     */
+    public function hire(User $user, Service $service)
+    {
+      return true;
+    }
 }
