@@ -21,6 +21,8 @@ Route::group(['middleware' => 'localization'], function(){
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
   Route::get('login/facebook/callback', 'Auth\FacebookOauthController@handleProviderCallback');
+  Route::get('login/google', 'Auth\GoogleOauthController@redirectToProvider');
+  Route::get('login/google/callback', 'Auth\GoogleOauthController@handleProviderCallback');
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
   // test resource

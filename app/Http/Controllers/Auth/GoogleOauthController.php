@@ -1,28 +1,27 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Socialite;
 
-
-class FacebookOauthController extends Controller
+class GoogleOauthController extends Controller
 {
-
- /**
-     * Redirect the user to the facebook authentication page.
+    
+/**
+     * Redirect the user to the google authentication page.
      *
      * @return \Illuminate\Http\Response
      */
     public function redirectToProvider()
     {
-        return Socialite::driver('facebook')->stateless()->redirect();
+        return Socialite::driver('google')->stateless()->redirect();
     }
-
     /**
-     * Obtain the user information from Facebook.
+     * Obtain the user information from Google.
      *
      * @return \Illuminate\Http\Response
      */
@@ -31,7 +30,7 @@ class FacebookOauthController extends Controller
         // enter redirect url here
         $url = "http://localhost:8000";
 
-        $user = Socialite::driver('facebook')->stateless()->user();
+        $user = Socialite::driver('google')->stateless()->user();
         if($user->token){
         $checkIfUserPresentInDb = User::where('email',$user->getEmail())->first();
         if($checkIfUserPresentInDb){
@@ -42,13 +41,12 @@ class FacebookOauthController extends Controller
             // if user does not exists
          $createUser = User::create([
              'name'=>$user->getName(),
-             'email'=>$user->getEmail(),
+             'email'=>$user->getEmail(), 
          ]);
          $accessToken = $createUser->createToken('authToken')->accessToken;
-         return response(['message'=>'success','token'=>$token]);
+         return response(['message'=>'success','token'=>$accesstoken]);
         }
         }
     }
-
 
 }
