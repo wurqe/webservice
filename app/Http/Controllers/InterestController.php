@@ -35,7 +35,15 @@ class InterestController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'interest_ids'     => 'array',
+        'interest_ids.*'   => 'numeric',
+      ]);
+      $user = $request->user();
+      $ids = $request->interest_ids;
+      $attach = $user->interests()->attach($ids);
+      return ['status' => true, 'message' => trans('msg.interest.added')];
+
     }
 
     /**
