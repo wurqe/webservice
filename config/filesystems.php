@@ -1,5 +1,10 @@
 <?php
-
+// dd([
+//     'driver'      => env('FILESYSTEM_DRIVER', 'local'),
+//     'root'        =>  base_path('media/images/service_attachments'),
+//     'visibility'  => 'public',
+//     'url'         => env('APP_URL').'/'. 'media/images/service_attachments',
+// ]);
 return [
 
     /*
@@ -46,6 +51,7 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
+            'url'  => env('APP_URL').'/storage/app',
         ],
 
         'public' => [
@@ -62,6 +68,13 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
+        ],
+
+        'service_attachments' => [
+            'driver'      => env('FILESYSTEM_DRIVER', 'local'),
+            'root'        =>  base_path('media/images/service_attachments'),
+            'visibility'  => 'public',
+            'url'         => env('APP_URL').'/'. 'media/images/service_attachments',
         ],
 
     ],
