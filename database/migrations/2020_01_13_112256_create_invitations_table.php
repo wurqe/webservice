@@ -17,9 +17,9 @@ class CreateInvitationsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('service_id')->unsigned();
-            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'canceled'])->default('pending');
             $table->mediumText('comment')->nullable();
-            // $table->bigInteger('other_user_id')->unsigned();
+            $table->boolean('hired')->default(false);
             $table->timestamps();
         });
 

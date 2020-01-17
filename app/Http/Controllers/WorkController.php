@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Work;
+use App\Service;
+use App\Invitation;
 use Illuminate\Http\Request;
 
 class WorkController extends Controller
@@ -35,7 +37,34 @@ class WorkController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'invitation_id'   => 'required|numeric',
+        'payment_method'  => ['regex:(wurqe|cash)'],
+        'amount'          => 'numeric',
+        // 'amount_currency' => 'numeric',
+      ]);
+      $invitation_id  = $request->invitation_id;
+      $invitation     = Invitation::findOrFail($invitation_id);
+      $service_id     = $invitation->service_id;
+      $service        = $invitation->service;
+      $amount         = $invitation->amount ?? $service->amount ?? 0;
+      $payment_method = $request->payment_method ?? $invitation->payment_method ?? 'wurqe';
+      $percentage     = 99;//99% e.g
+
+      $this->authorize('work', $invitation);
+      $this->authorize('create', Work::class);
+
+      // check started work
+      if($work    = $invitation->isWorkStarted()) return ['status' => false, 'work' => $work, 'message' => trans('msg.work.started')];
+      $calculated = $amount / (100/$percentage);
+
+      $work = $service->work()->create([
+        'invitation_id'     => $invitation_id,
+        'amount'            => $calculated,
+        'payment_method'    => $payment_method,
+      ]);
+
+      return ['status' => true, 'work' => $work, 'message' => trans('msg.work.starts')];
     }
 
     /**
@@ -69,7 +98,28 @@ class WorkController extends Controller
      */
     public function update(Request $request, Work $work)
     {
-        //
+      $this->authorize('update', $work);
+
+      // $work->complete();
+      // return ['status' => true, 'message' => trans('msg.work.completed')];
+    }
+
+    /**
+     * compelete the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Work  $work
+     * @return \Illuminate\Http\Response
+     */
+    public function complete(Request $request, Work $work)
+    {
+      $this->authorize('complete', $work);
+
+      // check work completed
+      if($completed = $work->isCompleted()) return ['status' => false, 'work' => $work, 'message' => trans('msg.work.completed')];
+
+      $work->complete();
+      return ['status' => true, 'work' => $work, 'message' => trans('msg.work.completes')];
     }
 
     /**
