@@ -17,3 +17,4 @@ Route::get('login/facebook/callback', 'FacebookOauthController@handleProviderCal
 Route::get('login/google', 'GoogleOauthController@redirectToProvider');
 Route::get('login/google/callback', 'GoogleOauthController@handleProviderCallback');
 Route::put('UpdatePersonalInfo/{id}', 'UpdatePersonalInfoController@update');
+Route::put('ProfilePics/{id}', 'UpdatePersonalInfoController@ProfileImage');

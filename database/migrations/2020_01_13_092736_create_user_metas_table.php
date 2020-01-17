@@ -15,6 +15,7 @@ class CreateUserMetasTable extends Migration
     {
         Schema::create('user_metas', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('user_id')->unsigned();
             $table->string('name');
             $table->string('value');
             $table->timestamps();
