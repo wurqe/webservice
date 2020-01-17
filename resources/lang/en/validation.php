@@ -134,6 +134,17 @@ return [
             'rule-name' => 'custom-message',
         ],
     ],
+    'latitude' => 'The :attribute must be a valid Latitude',
+    'longitude' => 'The :attribute must be a valid Longitude',
+
+    'either_required' => [
+      "email" => [
+        "The email or name field is required."
+      ],
+      "name" => [
+        "The email or name field is required."
+      ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

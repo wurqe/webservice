@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
+
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\User;
 use Validator;
 use Socialite;
 
-
-class FacebookOauthController extends Controller
+class GoogleOauthController extends Controller
 {
-
- /**
-     * Redirect the user to the facebook authentication page.
+    
+/**
+     * Redirect the user to the google authentication page.
      *
      * @return \Illuminate\Http\Response
      */
     public function redirectToProvider()
     {
-        return Socialite::driver('facebook')->stateless()->redirect();
+        return Socialite::driver('google')->stateless()->redirect();
     }
-
     /**
-     * Obtain the user information from Facebook.
+     * Obtain the user information from Google.
      *
      * @return \Illuminate\Http\Response
      */
@@ -30,13 +30,13 @@ class FacebookOauthController extends Controller
         // enter redirect url here
         $url = "http://localhost:8000";
 
-        $user = Socialite::driver('facebook')->stateless()->user();
+        $user = Socialite::driver('google')->stateless()->user();
         if($user->token){
         $checkIfUserPresentInDb = User::where('email',$user->getEmail())->first();
         if($checkIfUserPresentInDb){
         // if user already exists
         $token = $checkIfUserPresentInDb->createToken('authToken')->accessToken;
-        return redirect()->to($url.'?userId='.$checkIfUserPresentInDb->id.'token='.$token);
+        return response(['message'=>'success','token'=>$token]);
         }else{
             // if user does not exists
          $createUser = User::create([
@@ -44,10 +44,9 @@ class FacebookOauthController extends Controller
              'email'=>$user->getEmail(), 
          ]);
          $accessToken = $createUser->createToken('authToken')->accessToken;
-         return redirect()->to($url.'?token='.$accessToken.'userId='.$createUser->id); //redirect to users dashboard;
+         return response(['message'=>'success','token'=>$accesstoken]);
         }
         }
     }
-
 
 }
