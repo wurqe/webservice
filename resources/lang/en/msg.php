@@ -17,8 +17,9 @@ return [
     'hired'           => 'Contract initiated successfully',
   ],
   'work'              => [
-    'started'         => 'The invitation job as already started',
+    'started'         => 'The invitation job has already started',
     'starts'          => 'The service job started successfully',
     'completes'       => 'The service job completed successfully',
+    'rated'           => 'The job has already been rated',
   ],
 ];

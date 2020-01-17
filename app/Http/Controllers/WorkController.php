@@ -132,4 +132,26 @@ class WorkController extends Controller
     {
         //
     }
+
+    public function rate(Request $request, Work $work)
+    {
+      $this->authorize('rate', $work);
+      // check if already rated
+
+      $request->validate([
+        'rating'         => 'required|digits_between:1,5',
+        'title'          => 'min:3|max:99',
+        'body'           => 'max:255',
+        // rating	title	body	approved	reviewrateable_type	reviewrateable_id	author_type	author_id
+      ]);
+      if ($work->isRated()) return ['status' => false, 'rating' => $work->rated, 'message' => trans('msg.work.rated')];
+      $user     = $request->user();
+      $rating   = $request->rating;
+      $title    = $request->title;
+      $body     = $request->body;
+
+      $rated = $user->rate($work, $work->rateArray($rating, $title, $body));
+
+      return ['status' => true, 'rating' => $rated, 'message' => trans('msg.work.rated')];
+    }
 }
