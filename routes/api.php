@@ -21,23 +21,30 @@ Route::group(['middleware' => 'localization'], function(){
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
   Route::get('login/facebook/callback', 'Auth\FacebookOauthController@handleProviderCallback');
+  Route::get('login/google', 'Auth\GoogleOauthController@redirectToProvider');
+  Route::get('login/google/callback', 'Auth\GoogleOauthController@handleProviderCallback');
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
   // test resource
   // Route::resource('tests', 'TestController');
-
+  // guest routes
+  Route::group(['middleware' => ['guest']], function(){
+    Route::get('services', 'ServiceController@index');
+  });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
-    Route::resource('users', 'UserController');
-    Route::resource('settings', 'SettingController');
-    Route::resource('interests', 'InterestController');
-    Route::resource('categories', 'CategoryController');
-    Route::resource('invitations', 'InvitationController');
-    Route::resource('notifications', 'NotificationController');
-    Route::resource('services', 'ServiceController');
-    Route::resource('jobs', 'WorkController');
-    Route::resource('payments', 'PaymentController');
+    Route::apiResources([
+      'users'             => 'UserController',
+      'settings'          => 'SettingController',
+      'interests'         => 'InterestController',
+      'categories'        => 'CategoryController',
+      'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
+      'jobs'              => 'WorkController',
+      'payments'          => 'PaymentController',
+    ]);
+    Route::resource('services', 'ServiceController')->except(['index']);
 
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
