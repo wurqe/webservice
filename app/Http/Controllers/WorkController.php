@@ -154,4 +154,16 @@ class WorkController extends Controller
 
       return ['status' => true, 'rating' => $rated, 'message' => trans('msg.work.rated')];
     }
+
+    public function pay(Request $request, Work $work){
+      $user = $request->user();
+      // check already paid
+      if($user->paid($work))
+        return ['status' => false, 'message' => trans('msg.work.paid')];
+      if ($user->safePay($work)) {
+        return ['status' => true, 'message' => trans('msg.work.pays')];
+      } else {
+        return ['status' => false, 'message' => trans('msg.work.pay_failed')];
+      }
+    }
 }

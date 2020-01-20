@@ -51,6 +51,7 @@ Route::group(['middleware' => 'localization'], function(){
     // jobs endpoints
     Route::put('jobs/complete/{work}', 'WorkController@complete');
     Route::post('jobs/rate/{work}', 'WorkController@rate');
+    Route::post('jobs/{work}/pay', 'WorkController@pay');
     Route::get('users/wallet/balance', 'userController@balance');
     Route::get('transactions', 'PaymentController@transactionHistory');
 

@@ -17,7 +17,7 @@ use Carbon\Carbon;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia
 {
-  use Notifiable, HasWallet, CanPay, HasMediaTrait, HasApiTokens;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens;
 
   public function rate(Work $work, array $rating){
     return $work->rating($rating, $this);

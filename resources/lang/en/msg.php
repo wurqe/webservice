@@ -18,6 +18,9 @@ return [
   ],
   'work'              => [
     'started'         => 'The invitation job has already started',
+    'paid'            => 'The work has already been paid for',
+    'pay_failed'      => 'The payment failed insuffiecient balance',
+    'pays'            => 'The payment was successful',
     'starts'          => 'The service job started successfully',
     'completes'       => 'The service job completed successfully',
     'rated'           => 'The job has already been rated',

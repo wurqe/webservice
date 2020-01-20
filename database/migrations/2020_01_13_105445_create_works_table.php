@@ -16,7 +16,7 @@ class CreateWorksTable extends Migration
     Schema::create('works', function (Blueprint $table) {
       $table->bigIncrements('id');
       $table->bigInteger('service_id')->unsigned();
-      $table->bigInteger('invitaion_id')->unsigned();
+      $table->bigInteger('invitation_id')->unsigned();
       $table->enum('status', ['pending', 'completed', 'canceled'])->default('pending');
       $table->enum('payment_method', ['wurqe', 'cash'])->default('wurqe');
       $table->decimal('amount', 9,3)->nullable();
@@ -26,7 +26,7 @@ class CreateWorksTable extends Migration
     });
 
     Schema::table('works', function (Blueprint $table) {
-      $table->foreign('invitaion_id')->references('id')->on('invitations')->onDelete('cascade');
+      $table->foreign('invitation_id')->references('id')->on('invitations')->onDelete('cascade');
       $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
     });
   }
