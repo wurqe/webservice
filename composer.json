@@ -19,7 +19,8 @@
         "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
         "spatie/laravel-medialibrary": "^7.18",
-        "spatie/laravel-tags": "^2.5"
+        "spatie/laravel-tags": "^2.5",
+        "xeviant/laravel-paystack": "^1.5"
     },
     "require-dev": {
         "beyondcode/laravel-er-diagram-generator": "^1.4",

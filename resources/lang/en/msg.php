@@ -22,4 +22,7 @@ return [
     'completes'       => 'The service job completed successfully',
     'rated'           => 'The job has already been rated',
   ],
+  'payment'           => [
+    'responded'         => 'The payment has already been worked on',
+  ],
 ];

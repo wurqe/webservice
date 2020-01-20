@@ -26,8 +26,8 @@ class CreateWorksTable extends Migration
     });
 
     Schema::table('works', function (Blueprint $table) {
-      $table->foreign('other_user_id')->references('id')->on('users')->onDelete('cascade');
-      $table->foreign('invitaion_id')->references('id')->on('invitaions')->onDelete('cascade');
+      $table->foreign('invitaion_id')->references('id')->on('invitations')->onDelete('cascade');
+      $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
     });
   }
 

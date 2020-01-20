@@ -28,7 +28,7 @@ class CreateWalletsTable extends Migration
         Schema::create($this->table(), function (Blueprint $table) {
             $table->increments('id');
             $table->morphs('holder');
-            // $table->string('name');
+            $table->string('name');
             $table->string('slug')->index();
             // $table->string('description')->nullable();
             $table->bigInteger('balance')->default(0);
