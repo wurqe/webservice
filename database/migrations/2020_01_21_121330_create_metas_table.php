@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateServiceMetasTable extends Migration
+class CreateMetasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,13 @@ class CreateServiceMetasTable extends Migration
      */
     public function up()
     {
-        Schema::create('service_metas', function (Blueprint $table) {
+        Schema::create('metas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('service_id')->unsigned();
-            $table->string('name');
+            $table->morphs('metable');
+            $table->string('name', 30);
             $table->string('value');
             $table->timestamps();
         });
-
-        Schema::table('service_metas', function (Blueprint $table) {
-          $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
-         });
     }
 
     /**
@@ -33,6 +29,6 @@ class CreateServiceMetasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('service_metas');
+        Schema::dropIfExists('metas');
     }
 }
