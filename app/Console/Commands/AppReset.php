@@ -40,24 +40,23 @@ class AppReset extends Command
     public function handle()
     {
       Log::debug('app:reset');
-      // $output['freshDb'] = Artisan::call('migrate:fresh');
-      // print("refreshed migration\n");
-      // $output['passportDb'] = Artisan::call('migrate', [
-      //   '--path' => 'vendor/laravel/passport/database/migrations', '--force' => true
-      // ]);
-      // print("migrated passport\n");
-      // $output['passportInstall'] = Artisan::call('passport:install');
-      // print("installed passport\n");
-      // $output['ImportData'] = Artisan::call('db:import_default_data');
-      // print("imported default database datas\n");
-      // $output['eventGen'] = Artisan::call('event:generate');
-      // print("generated events\n");
-      // // $output['dbSeed'] = Artisan::call('db:seed');
-      // // print("seeded db\n");
-      // // $output['MigrateDB'] = Artisan::call('migrate');
-      // // print("migrated db\n");
-      // Log::debug($output);
-      $output = [1];
+      $output['freshDb'] = Artisan::call('migrate:fresh');
+      print("refreshed migration\n");
+      $output['passportDb'] = Artisan::call('migrate', [
+        '--path' => 'vendor/laravel/passport/database/migrations', '--force' => true
+      ]);
+      print("migrated passport\n");
+      $output['passportInstall'] = Artisan::call('passport:install');
+      print("installed passport\n");
+      $output['ImportData'] = Artisan::call('db:import_default_data');
+      print("imported default database datas\n");
+      $output['eventGen'] = Artisan::call('event:generate');
+      print("generated events\n");
+      // $output['dbSeed'] = Artisan::call('db:seed');
+      // print("seeded db\n");
+      // $output['MigrateDB'] = Artisan::call('migrate');
+      // print("migrated db\n");
+      Log::debug($output);
       print_r($output);
     }
 }
