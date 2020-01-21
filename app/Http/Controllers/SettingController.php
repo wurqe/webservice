@@ -14,7 +14,7 @@ class SettingController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -35,7 +35,15 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'name'      => 'required|string',
+        'value'     => 'required|string',
+      ]);
+      $user     = $request->user();
+      $name     = $request->name;
+      $value    = $request->value;
+      $settings = $user->addSetting($name, $value);
+      return ['status' => true, 'settings' => $settings];
     }
 
     /**

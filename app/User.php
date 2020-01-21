@@ -20,6 +20,18 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 {
   use Notifiable, CanPay, HasMediaTrait, HasApiTokens;
 
+  public function addSetting($name, $value){
+    $meta = $this->settings()->updateOrCreate(['name' => $name, 'value' => $value]);
+    $this->load('settings');
+    return $meta;
+  }
+
+  // public function addSetting($metas){
+  //   $meta = $this->settings()->updateOrCreate($metas);
+  //   $this->load('settings');
+  //   return $meta;
+  // }
+
   public function getFeePercent() : float{
     return 1;//1%
   }
