@@ -14,10 +14,15 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
+use Bavix\Wallet\Interfaces\Taxable;
 
-class User extends Authenticatable implements Wallet, Customer, HasMedia
+class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
 {
   use Notifiable, CanPay, HasMediaTrait, HasApiTokens;
+
+  public function getFeePercent() : float{
+    return 1;//1%
+  }
 
   public function rate(Work $work, array $rating){
     return $work->rating($rating, $this);

@@ -9,8 +9,9 @@ use Codebyray\ReviewRateable\Models\Rating;
 use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Product;
 use Bavix\Wallet\Interfaces\Customer;
+use Bavix\Wallet\Interfaces\Taxable;
 
-class Work extends Model implements ReviewRateable, Product
+class Work extends Model implements ReviewRateable, Product, Taxable
 {
   use ReviewRateableTrait, HasWallet;
   protected $fillable = ['status', 'invitation_id', 'service_id', 'completed_at', 'amount', 'amount_currency', 'payment_method'];
@@ -24,9 +25,14 @@ class Work extends Model implements ReviewRateable, Product
       return true;
   }
 
-  public function getAmountProduct(Customer $customer): int
+  public function getAmountProduct(Customer $customer = null): int
   {
       return $this->amount ?? 0;
+  }
+
+  public function getFeePercent() : float
+  {
+      return 0.01; // 1%
   }
 
   public function getMetaProduct(): ?array
