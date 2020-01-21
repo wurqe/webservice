@@ -6,8 +6,8 @@ namespace App\Traits;
  */
 trait HasMeta
 {
-  public function addMeta($metas){
-    $meta = $this->metas()->updateOrCreate($metas);
+  public function addMeta($check = [], $metas){
+    $meta = $this->metas()->updateOrCreate($check, $metas);
     $this->load('metas');
     return $meta;
   }

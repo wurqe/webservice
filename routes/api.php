@@ -43,6 +43,7 @@ Route::group(['middleware' => 'localization'], function(){
       'notifications'     => 'NotificationController',
       'jobs'              => 'WorkController',
       'payments'          => 'PaymentController',
+      'metas'             => 'MetaController',
     ]);
     Route::resource('services', 'ServiceController')->except(['index']);
 

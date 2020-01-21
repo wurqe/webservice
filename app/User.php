@@ -15,10 +15,11 @@ use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
 use Bavix\Wallet\Interfaces\Taxable;
+use App\Traits\HasMeta;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
 {
-  use Notifiable, CanPay, HasMediaTrait, HasApiTokens;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta;
 
   public function addSetting($name, $value){
     $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);
