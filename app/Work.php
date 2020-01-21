@@ -6,11 +6,47 @@ use Illuminate\Database\Eloquent\Model;
 use Codebyray\ReviewRateable\Contracts\ReviewRateable;
 use Codebyray\ReviewRateable\Traits\ReviewRateable as ReviewRateableTrait;
 use Codebyray\ReviewRateable\Models\Rating;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Product;
+use Bavix\Wallet\Interfaces\Customer;
+use Bavix\Wallet\Interfaces\Taxable;
 
-class Work extends Model implements ReviewRateable
+class Work extends Model implements ReviewRateable, Product, Taxable
 {
-  use ReviewRateableTrait;
+  use ReviewRateableTrait, HasWallet;
   protected $fillable = ['status', 'invitation_id', 'service_id', 'completed_at', 'amount', 'amount_currency', 'payment_method'];
+
+  public function canBuy(Customer $customer, int $quantity = 1, bool $force = null): bool
+  {
+      /**
+       * If the service can be purchased once, then
+       *  return !$customer->paid($this);
+       */
+      return true;
+  }
+
+  public function getAmountProduct(Customer $customer = null): int
+  {
+      return $this->amount ?? 0;
+  }
+
+  public function getFeePercent() : float
+  {
+      return 0.01; // 1%
+  }
+
+  public function getMetaProduct(): ?array
+  {
+      return [
+          'title' => $this->service->title,
+          'description' => 'Payment for Service #' . $this->service->id,
+      ];
+  }
+
+  public function getUniqueId(): string
+  {
+      return (string)$this->getKey();
+  }
 
   public function isRated(){
     return $this->rated;
