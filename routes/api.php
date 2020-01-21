@@ -42,6 +42,7 @@ Route::group(['middleware' => 'localization'], function(){
       'invitations'       => 'InvitationController',
       'notifications'     => 'NotificationController',
       'jobs'              => 'WorkController',
+      'payments'          => 'PaymentController',
     ]);
     Route::resource('services', 'ServiceController')->except(['index']);
 
@@ -49,6 +50,8 @@ Route::group(['middleware' => 'localization'], function(){
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
     // jobs endpoints
     Route::put('jobs/complete/{work}', 'WorkController@complete');
+    Route::post('jobs/rate/{work}', 'WorkController@rate');
+    Route::get('users/wallet/balance', 'userController@balance');
 
     // test resource
     Route::resource('tests', 'TestController');

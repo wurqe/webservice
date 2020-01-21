@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+  public function balance(Request $request)
+  {
+    $user = $request->user();
+    return ['balance' => $user->balance];
+  }
     /**
      * Display a listing of the resource.
      *

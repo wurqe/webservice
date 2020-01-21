@@ -104,4 +104,16 @@ class WorkPolicy
     {
         //
     }
+
+    /**
+     * Determine whether the user can rate the work.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Work  $work
+     * @return mixed
+     */
+    public function rate(User $user, Work $work)
+    {
+      return $work->invitation->user_id = $user->id;
+    }
 }
