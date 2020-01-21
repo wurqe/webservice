@@ -8,69 +8,52 @@ use Paystack;
 
 class PaymentController extends Controller
 {
-  /**
-    * Redirect the User to Paystack Payment Page
-    * @return Url
-    */
-   public function redirectToGateway(Request $request)
-   {
-     // validate incase of form manipulation
-      // start payment in db
-      Payment::create([
-        'status' => 'pending',
-        // 'user_id' => auth()->user()->id,
-        'amount' => $totalCommissionFloated,
-      ]);
-
-       // return Paystack::getAuthorizationUrl()->redirectNow();
-   }
-
-   /**
-    * Obtain Paystack payment information
-    * @return void
-    */
-   public function handleGatewayCallback()
-   {
-       $paymentDetails = Paystack::getPaymentData();
-
-       if (!$paymentDetails['status']) {
-         // code...
-         return response()->json(['status' => false, 'message' => $paymentDetails['message']]);
-       }
-
-       if ($paymentDetails['status']) {
-         // code...
-         $payment = Payment::where('status', 'pending')->where('branch_id', auth()->user()->id)->latest();
-
-         $payment->update([
-           'status' => $paymentDetails['status'],
-           'reference' => $paymentDetails['data']['reference'],
-           'authorization_code' => $paymentDetails['data']['authorization']['authorization_code'],
-           'currency_code' => $paymentDetails['data']['currency'],
-           'payed_at' => NOW(),//$paymentDetails['data']['paidAt'],
-         ]);
-
-       }
-
-       return redirect('/payment/status')->with([
-         'status' => $paymentDetails['status'],
-         'message' => $paymentDetails['message'],
-       ]);
-
-       return response()->json(['status' => true, 'message' => $paymentDetails['message']]);
-       // dd($paymentDetails);
-       // Now you have the payment details,
-       // you can store the authorization_code in your db to allow for recurrent subscriptions
-       // you can then redirect or do whatever you want
-   }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $request->validate([
+        'search'        => '',
+        'orderBy'       => ['regex:(amount|message|reference|currency_code|status)', 'nullable'],
+        'pageSize'      => 'nullable|numeric',
+      ]);
+
+      $user           = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+
+      $payments = $user->payments();
+
+      if ($search) $payments->where('status', 'LIKE', '%'.$search.'%')
+      ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('reference', 'LIKE', '%'.$search.'%')
+      ->orWhere('message', 'LIKE', '%'.$search.'%')->orWhere('currency_code', 'LIKE', '%'.$search.'%');
+
+      return $payments->orderBy($orderBy ?? 'id')->paginate($pageSize ?? 15);
+    }
+
+    public function transactionHistory(Request $request)
+    {
+      $request->validate([
+        'search'        => ['nullable', 'regex:(deposit|status|amount)'],
+        'orderBy'       => ['regex:(deposit|status|amount)', 'nullable'],
+        'pageSize'      => 'nullable|numeric',
+      ]);
+
+      $user = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+
+      $transactions = $user->transactions();
+
+      if ($search) $transactions->where('deposit', 'LIKE', '%'.$search.'%')
+      ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('status', 'LIKE', '%'.$search.'%');
+
+      return $transactions->orderBy($orderBy ?? 'id')->paginate($pageSize ?? 15);
     }
 
     /**

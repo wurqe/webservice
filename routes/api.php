@@ -52,6 +52,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::put('jobs/complete/{work}', 'WorkController@complete');
     Route::post('jobs/rate/{work}', 'WorkController@rate');
     Route::get('users/wallet/balance', 'userController@balance');
+    Route::get('transactions', 'PaymentController@transactionHistory');
 
     // test resource
     Route::resource('tests', 'TestController');
