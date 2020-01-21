@@ -77,7 +77,13 @@ class SettingController extends Controller
      */
     public function update(Request $request, Setting $setting)
     {
-        //
+      $request->validate([
+        'value'     => 'required|string',
+      ]);
+      $user     = $request->user();
+      $value    = $request->value;
+      $settings = $user->addSetting($setting->name, $value);
+      return ['status' => true, 'settings' => $settings];
     }
 
     /**
