@@ -35,7 +35,7 @@ class ServiceController extends Controller
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
 
-      return $services->paginate($pageSize ?? null);
+      return $services->paginate($pageSize);
     }
 
     /**

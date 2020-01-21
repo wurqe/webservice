@@ -12,9 +12,19 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+      $this->validatePagination($request, ['orderBy' => 'string|nullable']);
 
+      $user = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+
+      $settings = $user->settings();
+      if ($search) $settings->where('name', 'LIKE', '%'.$search.'%');
+
+      return ['status' => true, 'settings' => $settings->paginate($pageSize)];
     }
 
     /**
