@@ -14,7 +14,17 @@ class MetaController extends Controller
      */
      public function index(Request $request)
      {
-       
+       $this->validatePagination($request);
+
+       $user = $request->user();
+       $search         = $request->search;
+       $orderBy        = $request->orderBy;
+       $pageSize       = $request->pageSize;
+
+       $metas          = $user->metas();
+       if ($search) $metas->where('name', 'LIKE', '%'.$search.'%');
+
+       return ['status' => true, 'metas' => $metas->paginate($pageSize)];
      }
 
     /**
