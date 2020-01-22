@@ -55,6 +55,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('jobs/{work}/pay', 'WorkController@pay');
     Route::get('users/wallet/balance', 'userController@balance');
     Route::get('transactions', 'PaymentController@transactionHistory');
+    Route::get('users/wallet/details', 'UserController@wallet');
 
     // test resource
     Route::resource('tests', 'TestController');
