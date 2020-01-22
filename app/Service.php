@@ -9,21 +9,16 @@ use Spatie\MediaLibrary\Models\Media;
 // use Spatie\Tags\Tag;
 use \getID3;
 use App\Media as MMedia;
+use App\Traits\HasMeta;
 // use Tag;
 
 class Service extends Model implements HasMedia
 {
-  use \Spatie\Tags\HasTags, HasMediaTrait;
+  use \Spatie\Tags\HasTags, HasMediaTrait, HasMeta;
 
   protected $fillable = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
 
   protected $hidden = ['pivot'];
-
-  public function addMeta($metas){
-    $meta = $this->metas()->updateOrCreate($metas);
-    $this->load('metas');
-    return $meta;
-  }
 
   public function saveImage($image){
     $attachments = [];
@@ -84,7 +79,7 @@ class Service extends Model implements HasMedia
   }
 
   public function metas(){
-    return $this->hasMany(ServiceMeta::class);
+    return $this->morphMany(Meta::class, 'metable');
   }
 
   public function work(){

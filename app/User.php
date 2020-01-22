@@ -79,7 +79,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function metas(){
-    return $this->hasMany(UserMeta::class);
+    return $this->morphMany(Meta::class, 'metable');
   }
 
   public function notifications(){
