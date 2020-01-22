@@ -62,4 +62,7 @@ Route::group(['middleware' => 'localization'], function(){
     // test resource
     Route::resource('tests', 'TestController');
   });
+  Route::get('app/reset/0000', function(){
+    // Artisan::call('app:reset');
+  });
 });
