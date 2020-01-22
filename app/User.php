@@ -15,10 +15,23 @@ use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
 use Bavix\Wallet\Interfaces\Taxable;
+use App\Traits\HasMeta;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
 {
-  use Notifiable, CanPay, HasMediaTrait, HasApiTokens;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta;
+
+  public function addSetting($name, $value){
+    $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);
+    $this->load('settings');
+    return $meta;
+  }
+
+  // public function addSetting($metas){
+  //   $meta = $this->settings()->updateOrCreate($metas);
+  //   $this->load('settings');
+  //   return $meta;
+  // }
 
   public function getFeePercent() : float{
     return 1;//1%
@@ -83,7 +96,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function metas(){
-    return $this->hasMany(UserMeta::class);
+    return $this->morphMany(Meta::class, 'metable');
   }
 
   public function notifications(){

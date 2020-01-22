@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+  public function wallet(Request $request)
+  {
+    $user = $request->user();
+    return ['wallet' => $user->wallet];
+  }
+
   public function balance(Request $request)
   {
     $user = $request->user();

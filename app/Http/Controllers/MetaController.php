@@ -2,30 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Setting;
+use App\Meta;
 use Illuminate\Http\Request;
 
-class SettingController extends Controller
+class MetaController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-      $this->validatePagination($request, ['orderBy' => 'string|nullable']);
+     public function index(Request $request)
+     {
+       $this->validatePagination($request);
 
-      $user = $request->user();
-      $search         = $request->search;
-      $orderBy        = $request->orderBy;
-      $pageSize       = $request->pageSize;
+       $user = $request->user();
+       $search         = $request->search;
+       $orderBy        = $request->orderBy;
+       $pageSize       = $request->pageSize;
 
-      $settings = $user->settings();
-      if ($search) $settings->where('name', 'LIKE', '%'.$search.'%');
+       $metas          = $user->metas();
+       if ($search) $metas->where('name', 'LIKE', '%'.$search.'%');
 
-      return ['status' => true, 'settings' => $settings->paginate($pageSize)];
-    }
+       return ['status' => true, 'metas' => $metas->paginate($pageSize)];
+     }
 
     /**
      * Show the form for creating a new resource.
@@ -52,17 +52,17 @@ class SettingController extends Controller
       $user     = $request->user();
       $name     = $request->name;
       $value    = $request->value;
-      $settings = $user->addSetting($name, $value);
-      return ['status' => true, 'settings' => $settings];
+      $metas    = $user->addMeta(['name' => $name], ['name' => $name, 'value' => $value]);
+      return ['status' => true, 'metas' => $metas];
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Setting  $setting
+     * @param  \App\Meta  $meta
      * @return \Illuminate\Http\Response
      */
-    public function show(Setting $setting)
+    public function show(Meta $meta)
     {
         //
     }
@@ -70,10 +70,10 @@ class SettingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Setting  $setting
+     * @param  \App\Meta  $meta
      * @return \Illuminate\Http\Response
      */
-    public function edit(Setting $setting)
+    public function edit(Meta $meta)
     {
         //
     }
@@ -82,27 +82,21 @@ class SettingController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Setting  $setting
+     * @param  \App\Meta  $meta
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Setting $setting)
+    public function update(Request $request, Meta $meta)
     {
-      $request->validate([
-        'value'     => 'required|string',
-      ]);
-      $user     = $request->user();
-      $value    = $request->value;
-      $settings = $user->addSetting($setting->name, $value);
-      return ['status' => true, 'settings' => $settings];
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Setting  $setting
+     * @param  \App\Meta  $meta
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Setting $setting)
+    public function destroy(Meta $meta)
     {
         //
     }

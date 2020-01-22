@@ -49,6 +49,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::get('transactions', 'PaymentController@transactionHistory');
     Route::post('payments/verify', 'PaymentController@verify');
     Route::get('payments/options', 'PaymentController@options');
+    Route::get('users/wallet/details', 'UserController@wallet');
     // resources
     Route::apiResources([
       'users'             => 'UserController',
