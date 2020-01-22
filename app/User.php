@@ -14,13 +14,41 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
+use Bavix\Wallet\Interfaces\Taxable;
+use App\Traits\HasMeta;
+use App\Traits\HasImage;
 
-class User extends Authenticatable implements Wallet, Customer, HasMedia
+class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
 {
-  use Notifiable, HasWallet, CanPay, HasMediaTrait, HasApiTokens;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta, HasImage;
+
+  public function addSetting($name, $value){
+    $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);
+    $this->load('settings');
+    return $meta;
+  }
+
+  // public function addSetting($metas){
+  //   $meta = $this->settings()->updateOrCreate($metas);
+  //   $this->load('settings');
+  //   return $meta;
+  // }
+
+  public function getFeePercent() : float{
+    return 1;//1%
+  }
+
+  public function rate(Work $work, array $rating){
+    return $work->rating($rating, $this);
+  }
+
+  public function invite(Service $service){
+    return $this->invitaions()->create([
+      'service_id'    => $service->id,
+    ]);
+  }
 
   public function grantMeToken(){
-    // $this->token()->revoke();
     $token          =  $this->createToken('MyApp');
 
     return [
@@ -32,16 +60,24 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
     ];
   }
 
-  public function interests(){
-    return $this->belongsToMany(Interest::class, 'interest_users')->withTimestamps();
-  }
-
   public function hire_invitations(){
     return $this->hasManyThrough(Invitation::class, Service::class);
   }
 
   public function invitaions(){
-    return $this->hasMany(Invitation::class, 'other_user_id');
+    return $this->hasMany(Invitation::class, 'user_id');
+  }
+
+  public function received_invitaions(){
+    return $this->hasManyThrough(Invitation::class, Service::class);
+  }
+
+  public function pending_invitaions(){
+    return $this->invitaions()->where('status', 'pending');
+  }
+
+  public function payments(){
+    return $this->hasMany(Payment::class);
   }
 
   public function services(){
@@ -57,11 +93,21 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia
   }
 
   public function metas(){
-    return $this->hasMany(UserMeta::class);
+    return $this->morphMany(Meta::class, 'metable');
   }
 
   public function notifications(){
     return $this->morphMany(Notification::class, 'notifiable')->latest();
+  }
+
+  public function registerMediaCollections(Media $media = null){
+    $this->addMediaCollection('avatar')
+    ->useDisk('user_avatars')
+    ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+    ->registerMediaConversions(function(Media $media = null){
+      $this->addMediaConversion('thumb')
+      ->width(100)->height(100);
+    });
   }
 
   // public function works(){

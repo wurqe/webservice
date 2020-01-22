@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -43,7 +42,7 @@ class FacebookOauthController extends Controller
             // if user does not exists
          $createUser = User::create([
              'name'=>$user->getName(),
-             'email'=>$user->getEmail(), 
+             'email'=>$user->getEmail(),
          ]);
          $accessToken = $createUser->createToken('authToken')->accessToken;
          return response(['message'=>'success','token'=>$token]);

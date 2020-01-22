@@ -18,12 +18,12 @@ class CreateServicesTable extends Migration
         $table->bigInteger('user_id')->unsigned();
         $table->bigInteger('category_id')->unsigned();
         $table->string('title', 15);
+        $table->enum('type', ['seek', 'provide'])->default('provide');
         $table->longText('description');
         $table->enum('payment_type', ['fixed', 'hourly', 'flexible'])->default('fixed');
         $table->boolean('negotiable')->default(false);
         $table->decimal('amount', 9,3)->nullable();
         $table->longText('terms')->nullable();
-        $table->string('timeframe')->nullable();
         $table->softDeletes();
         $table->timestamps();
       });

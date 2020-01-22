@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateServiceMetasTable extends Migration
+class CreateMetasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,18 @@ class CreateServiceMetasTable extends Migration
      */
     public function up()
     {
-        Schema::create('service_metas', function (Blueprint $table) {
+        Schema::create('metas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('service_id')->unsigned();
+<<<<<<< HEAD:database/migrations/2020_01_13_092736_create_user_metas_table.php
+            $table->integer('user_id')->unsigned();
             $table->string('name');
+=======
+            $table->morphs('metable');
+            $table->string('name', 30);
+>>>>>>> c38a5bc02d349eb2b26d3fd4b713d68792e1d286:database/migrations/2020_01_21_121330_create_metas_table.php
             $table->string('value');
             $table->timestamps();
         });
-
-        Schema::table('service_metas', function (Blueprint $table) {
-          $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
-         });
     }
 
     /**
@@ -33,6 +34,6 @@ class CreateServiceMetasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('service_metas');
+        Schema::dropIfExists('metas');
     }
 }

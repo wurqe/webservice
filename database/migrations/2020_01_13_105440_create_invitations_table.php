@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInterestUsersTable extends Migration
+class CreateInvitationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,19 @@ class CreateInterestUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('interest_users', function (Blueprint $table) {
+        Schema::create('invitations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('interest_id')->unsigned();
+            $table->bigInteger('service_id')->unsigned();
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'canceled'])->default('pending');
+            $table->mediumText('comment')->nullable();
+            $table->boolean('hired')->default(false);
             $table->timestamps();
         });
 
-        Schema::table('interest_users', function (Blueprint $table) {
+        Schema::table('invitations', function (Blueprint $table) {
           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-          $table->foreign('interest_id')->references('id')->on('interests')->onDelete('cascade');
+          $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
          });
     }
 
@@ -33,6 +36,6 @@ class CreateInterestUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('interest_users');
+        Schema::dropIfExists('invitations');
     }
 }

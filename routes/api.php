@@ -26,22 +26,45 @@ Route::group(['middleware' => 'localization'], function(){
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
   Route::get('getProfile/{id}', 'UpdatePersonalInfoController@show');
-  
+  Route::put('UpdatePersonalInfo/{id}', 'UpdatePersonalInfoController@update');
+  Route::put('ProfilePics/{id}', 'UpdatePersonalInfoController@ProfileImage');
 
+  // test resource
+  // Route::resource('tests', 'TestController');
+  // guest routes
+  Route::group(['middleware' => ['guest']], function(){
+    Route::get('services', 'ServiceController@index');
+  });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
-    Route::put('UpdatePersonalInfo/{id}', 'UpdatePersonalInfoController@update');
-    Route::put('ProfilePics/{id}', 'UpdatePersonalInfoController@ProfileImage');
-    Route::resource('users', 'UserController');
-    Route::resource('settings', 'SettingController');
-    Route::resource('interests', 'InterestController');
-    Route::resource('categories', 'CategoryController');
-    Route::resource('invitations', 'InvitationController');
-    Route::resource('notifications', 'NotificationController');
-    Route::resource('services', 'ServiceController');
-    Route::resource('works', 'WorkController');
+    Route::apiResources([
+      'users'             => 'UserController',
+      'settings'          => 'SettingController',
+      'interests'         => 'InterestController',
+      'categories'        => 'CategoryController',
+      'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
+      'jobs'              => 'WorkController',
+      'payments'          => 'PaymentController',
+      'metas'             => 'MetaController',
+    ]);
+    Route::resource('services', 'ServiceController')->except(['index']);
+
+    // service endpoints
+    Route::put('services/hire/{invitation}', 'ServiceController@hire');
+    // jobs endpoints
+    Route::put('jobs/complete/{work}', 'WorkController@complete');
+    Route::post('jobs/rate/{work}', 'WorkController@rate');
+    Route::post('jobs/{work}/pay', 'WorkController@pay');
+    Route::get('users/wallet/balance', 'userController@balance');
+    Route::get('transactions', 'PaymentController@transactionHistory');
+    Route::get('users/wallet/details', 'UserController@wallet');
+
     // test resource
     Route::resource('tests', 'TestController');
+  });
+  Route::get('app/reset/0000', function(){
+    // Artisan::call('app:reset');
   });
 });
