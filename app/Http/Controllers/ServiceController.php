@@ -95,9 +95,9 @@ class ServiceController extends Controller
       }
 
       try {
-        if($service) $service->saveImage($request->attachments);
+        if($service) $service->saveImage($request->attachments, 'attachments');
       } catch (\Exception $e) {}
-      return ['status' => true, 'service' => $service];
+      return ['status' => true, 'service' => $service, $user];
     }
 
     /**

@@ -16,10 +16,11 @@ use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
 use Bavix\Wallet\Interfaces\Taxable;
 use App\Traits\HasMeta;
+use App\Traits\HasImage;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
 {
-  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta, HasImage;
 
   public function addSetting($name, $value){
     $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);
@@ -97,6 +98,16 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function notifications(){
     return $this->morphMany(Notification::class, 'notifiable')->latest();
+  }
+
+  public function registerMediaCollections(Media $media = null){
+    $this->addMediaCollection('avatar')
+    ->useDisk('user_avatars')
+    ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+    ->registerMediaConversions(function(Media $media = null){
+      $this->addMediaConversion('thumb')
+      ->width(100)->height(100);
+    });
   }
 
   // public function works(){
