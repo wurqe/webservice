@@ -12,10 +12,20 @@ class MetaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
-    }
+     public function index(Request $request)
+     {
+       $this->validatePagination($request);
+
+       $user = $request->user();
+       $search         = $request->search;
+       $orderBy        = $request->orderBy;
+       $pageSize       = $request->pageSize;
+
+       $metas          = $user->metas();
+       if ($search) $metas->where('name', 'LIKE', '%'.$search.'%');
+
+       return ['status' => true, 'metas' => $metas->paginate($pageSize)];
+     }
 
     /**
      * Show the form for creating a new resource.
@@ -35,7 +45,15 @@ class MetaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'name'      => 'required|string',
+        'value'     => 'required|string',
+      ]);
+      $user     = $request->user();
+      $name     = $request->name;
+      $value    = $request->value;
+      $metas    = $user->addMeta(['name' => $name], ['name' => $name, 'value' => $value]);
+      return ['status' => true, 'metas' => $metas];
     }
 
     /**

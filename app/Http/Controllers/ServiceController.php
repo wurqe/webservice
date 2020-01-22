@@ -90,8 +90,8 @@ class ServiceController extends Controller
 
       // save meta
       if ($timeframe || $availability) {
-        if ($request->type === 'seek') $service->addMeta(['name' => 'timeframe', 'value' => $request->timeframe]);
-        else $service->addMeta(['name' => 'availability', 'value' => $request->availability]);
+        if ($request->type === 'seek') $service->addMeta([], ['name' => 'timeframe', 'value' => $request->timeframe]);
+        else $service->addMeta([], ['name' => 'availability', 'value' => $request->availability]);
       }
 
       try {
