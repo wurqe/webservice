@@ -17,6 +17,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Route::get('payment/callback/{code}', 'PaymentController@callback');
+Route::get('payments/pay/init', 'PaymentController@Astore');
+Route::get('payments/verify/{trxref}', 'PaymentController@Averify');
+
 Route::group(['middleware' => 'localization'], function(){
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
@@ -33,17 +37,6 @@ Route::group(['middleware' => 'localization'], function(){
   });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
-    // resources
-    Route::apiResources([
-      'users'             => 'UserController',
-      'settings'          => 'SettingController',
-      'interests'         => 'InterestController',
-      'categories'        => 'CategoryController',
-      'invitations'       => 'InvitationController',
-      'notifications'     => 'NotificationController',
-      'jobs'              => 'WorkController',
-      'payments'          => 'PaymentController',
-    ]);
     Route::resource('services', 'ServiceController')->except(['index']);
 
     // service endpoints
@@ -54,7 +47,18 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('jobs/{work}/pay', 'WorkController@pay');
     Route::get('users/wallet/balance', 'userController@balance');
     Route::get('transactions', 'PaymentController@transactionHistory');
-
+    Route::post('payments/verify', 'PaymentController@verify');
+    Route::get('payments/options', 'PaymentController@options');
+    // resources
+    Route::apiResources([
+      'users'             => 'UserController',
+      'settings'          => 'SettingController',
+      'categories'        => 'CategoryController',
+      'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
+      'jobs'              => 'WorkController',
+      'payments'          => 'PaymentController',
+    ]);
     // test resource
     Route::resource('tests', 'TestController');
   });
