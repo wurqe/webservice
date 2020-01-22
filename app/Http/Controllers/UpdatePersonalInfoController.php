@@ -54,7 +54,7 @@ class UpdatePersonalInfoController extends Controller
         $about = $profile->metas()->where('user_id',$profile->id)->where('name','about')->first();
         $quote = $profile->metas()->where('user_id',$profile->id)->where('name','quote')->first();
         $profileImage = $profile->metas()->where('user_id',$profile->id)->where('name','profileImage')->first();
-        $photoUrl = url('/images/ProfilePics',$profileImage->value);
+        $photoUrl = url('/storage/ProfilePics',$profileImage->value);
         return response([
         'id' => $profile->id,    
         'name'=>$profile->name,
