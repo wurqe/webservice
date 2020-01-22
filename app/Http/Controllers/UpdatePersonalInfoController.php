@@ -62,20 +62,22 @@ class UpdatePersonalInfoController extends Controller
     {
         //
     }
+
     public function ProfileImage(Request $request,$id)
     { 
         $user = User::find($id);
         if($user){   
     $validate = $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+    'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
     ]);
        if(!empty($request->file('photo'))){   
        $file = $request->file('photo');
        $FileName = str_replace(' ', '',time().'_'.$file->getClientOriginalName());
-       $path = $request->file('photo')->move(public_path("images/ProfilePics"),$FileName);
-       $photoUrl = url('/ProfilePics',$FileName);
+       $path = $request->file('photo')->storeAs('ProfilePics', $FileName);
+       $photoUrl = url('/storage/ProfilePics',$FileName);
 
-       $checkIfmetaExists = UserMeta::where('user_id',$id)->where('name','profileImage')->count(); 
+       $checkIfmetaExists = UserMeta::where('user_id',$id)->where('name','profileImage')->count();
+
        if($checkIfmetaExists > 0){
         $metadetails = UserMeta::where('user_id',$id)->where('name','profileImage')->first();
         $oldimage = $metadetails->value;
