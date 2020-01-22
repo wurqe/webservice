@@ -12,9 +12,19 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $this->validatePagination($request, ['orderBy' => 'string|nullable']);
+
+      $user = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+
+      $settings = $user->settings();
+      if ($search) $settings->where('name', 'LIKE', '%'.$search.'%');
+
+      return ['status' => true, 'settings' => $settings->paginate($pageSize)];
     }
 
     /**
@@ -35,7 +45,15 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $request->validate([
+        'name'      => 'required|string',
+        'value'     => 'required|string',
+      ]);
+      $user     = $request->user();
+      $name     = $request->name;
+      $value    = $request->value;
+      $settings = $user->addSetting($name, $value);
+      return ['status' => true, 'settings' => $settings];
     }
 
     /**
@@ -69,7 +87,13 @@ class SettingController extends Controller
      */
     public function update(Request $request, Setting $setting)
     {
-        //
+      $request->validate([
+        'value'     => 'required|string',
+      ]);
+      $user     = $request->user();
+      $value    = $request->value;
+      $settings = $user->addSetting($setting->name, $value);
+      return ['status' => true, 'settings' => $settings];
     }
 
     /**
