@@ -26,6 +26,8 @@ Route::group(['middleware' => 'localization'], function(){
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
   Route::get('getProfile/{id}', 'UpdatePersonalInfoController@show');
+  
+
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
