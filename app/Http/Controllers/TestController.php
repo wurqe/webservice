@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Artisan;
 
 class TestController extends Controller
 {
@@ -14,6 +15,52 @@ class TestController extends Controller
     public function index()
     {
       return \App\User::all();
+    }
+
+    public function reset()
+    {
+      // Artisan::call('app:reset');
+    }
+
+    public function welcome()
+    {
+      return view('welcome');
+    }
+
+    public function clearCache()
+    {
+      $exitCode = Artisan::call('cache:clear');
+      return '<h1>Cache facade value cleared</h1>';
+    }
+
+    public function optimize()
+    {
+      $exitCode = Artisan::call('optimize');
+      return '<h1>Reoptimized class loader</h1>';
+    }
+
+    public function routeCache()
+    {
+      $exitCode = Artisan::call('route:cache');
+      return '<h1>Routes cached</h1>';
+    }
+
+    public function routeClear()
+    {
+      $exitCode = Artisan::call('route:clear');
+      return '<h1>Route cache cleared</h1>';
+    }
+
+    public function viewClear()
+    {
+      $exitCode = Artisan::call('view:clear');
+      return '<h1>View cache cleared</h1>';
+    }
+
+    public function configCache()
+    {
+      $exitCode = Artisan::call('config:cache');
+      return '<h1>Clear Config cleared</h1>';
     }
 
     /**

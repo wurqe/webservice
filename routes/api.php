@@ -13,15 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-// Route::get('payment/callback/{code}', 'PaymentController@callback');
-Route::get('payments/pay/init', 'PaymentController@Astore');
-Route::get('payments/verify/{trxref}', 'PaymentController@Averify');
-
 Route::group(['middleware' => 'localization'], function(){
+  // Route::get('payment/callback/{code}', 'PaymentController@callback');
+  Route::get('payments/pay/init', 'PaymentController@Astore');
+  Route::get('payments/verify/{trxref}', 'PaymentController@Averify');
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
   Route::get('login/facebook/callback', 'Auth\FacebookOauthController@handleProviderCallback');
@@ -42,14 +37,14 @@ Route::group(['middleware' => 'localization'], function(){
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
     // jobs endpoints
-    Route::put('jobs/complete/{work}', 'WorkController@complete');
-    Route::post('jobs/rate/{work}', 'WorkController@rate');
-    Route::post('jobs/{work}/pay', 'WorkController@pay');
-    Route::get('users/wallet/balance', 'userController@balance');
-    Route::get('transactions', 'PaymentController@transactionHistory');
-    Route::post('payments/verify', 'PaymentController@verify');
-    Route::get('payments/options', 'PaymentController@options');
-    Route::get('users/wallet/details', 'UserController@wallet');
+    Route::put('jobs/complete/{work}',  'WorkController@complete');
+    Route::post('jobs/rate/{work}',     'WorkController@rate');
+    Route::post('jobs/{work}/pay',      'WorkController@pay');
+    Route::get('users/wallet/balance',  'userController@balance');
+    Route::get('transactions',          'PaymentController@transactionHistory');
+    Route::post('payments/verify',      'PaymentController@verify');
+    Route::get('payments/options',      'PaymentController@options');
+    Route::get('users/wallet/details',  'UserController@wallet');
     // resources
     Route::apiResources([
       'users'             => 'UserController',
@@ -63,7 +58,5 @@ Route::group(['middleware' => 'localization'], function(){
     // test resource
     Route::resource('tests', 'TestController');
   });
-  Route::get('app/reset/0000', function(){
-    // Artisan::call('app:reset');
-  });
+  Route::get('app/reset/0000', 'TestController@reset');
 });
