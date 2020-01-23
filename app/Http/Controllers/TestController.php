@@ -12,19 +12,16 @@ class TestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return \App\User::all();
-    }
-    
-    public function reset()
-    {
-      // Artisan::call('app:reset');
-    }
-    
-    public function welcome()
-    {
-      return view('welcome');
+      $user = $request->user();
+      $service = $user->services()->first();
+      // return $user->edit($service, ['amount' => 500], 'price', $user);
+      // return $service->edits;
+      // return $user->moderate($service->edits()->first(), 'accepted');
+      // return $user->editing;
+      // return $user->edited;
+      return $service->edited;
     }
 
     public function reset()

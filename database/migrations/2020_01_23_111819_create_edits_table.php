@@ -18,6 +18,7 @@ class CreateEditsTable extends Migration
           $table->morphs('edit');
           $table->morphs('editor');
           $table->nullableMorphs('moderator');
+          $table->string('name', 100);
           $table->json('changes');
           $table->enum('status', ['pending', 'accepted', 'rejected', 'canceled'])->default('pending');
           $table->timestamps();

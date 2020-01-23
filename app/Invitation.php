@@ -3,13 +3,23 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Edit\HasEdit;
+use App\Interfaces\Edit\Editable;
 
-class Invitation extends Model
+class Invitation extends Model implements Editable
 {
-  protected $fillable = ['hired', "user_id", "service_id", "comment", 'status'];
+  use HasEdit;
+  protected $fillable = ['hired', "user_id", "receiver_id", "service_id", "comment", 'status'];
+  // protected $hidden = ['edits'];
 
   public function isWorkStarted() {
     return $this->work;
+  }
+
+  public function loadBids(){
+    $this->bids = $this->edits;
+    $this->makeHidden(['edits']);
+    return $this;
   }
 
   public function initaiteContract() {
@@ -22,6 +32,10 @@ class Invitation extends Model
 
   public function user(){
     return $this->BelongsTo(User::class);
+  }
+
+  public function receiver(){
+    return $this->BelongsTo(User::class, 'receiver_id');
   }
 
   public function service(){

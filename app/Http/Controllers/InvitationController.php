@@ -27,8 +27,8 @@ class InvitationController extends Controller
       $pageSize       = $request->pageSize;
       $type           = $request->type ?? 'received';
 
-      if ($type == 'received') $invitations = $user->invitaions();
-      else $invitations = $user->received_invitaions();
+      if ($type == 'received') $invitations = $user->invitations();
+      else $invitations = $user->received_invitations();
 
       // if ($search) $invitations->where('title', 'LIKE', '%'.$search.'%');
 
@@ -55,20 +55,25 @@ class InvitationController extends Controller
     {
       $request->validate([
         'message'             => '',
-        'service_id'          => 'required|numeric',
+        'service_id'          => 'required|int',
+        'receiver_id'         => 'required|int',
+        'bid_amount'          => 'numeric',
       ]);
 
-      $user = $request->user();
-      $service = \App\Service::findOrFail($request->service_id);
+      $user         = $request->user();
+      $receiver_id  = $request->receiver_id;
+      $bid          = $request->bid_amount;
+      $receiver     = $user->findOrFail($receiver_id);
+      $service      = \App\Service::findOrFail($request->service_id);
 
       // check pending invitation
-      $pending = $user->pending_invitaions()->where('service_id', $service->id)->first();
-      if($pending) return ['status' => false, 'message' => trans('msg.invitation.pending')];
+      $pending    = $user->pending_invitations()->where('service_id', $service->id)->first();
+      if($pending) return ['status' => false, 'invitation' => $pending->loadBids(), 'message' => trans('msg.invitation.pending')];
 
       // message interface
       // --------->
 
-      $invitation = $user->invite($service);
+      $invitation = $user->invite($service, $receiver, $bid);
 
       return ['status' => true, 'invitation' => $invitation, 'message' => trans('msg.invitation.sent')];
     }
@@ -112,11 +117,11 @@ class InvitationController extends Controller
       $action = $request->action;
       // if the user is the invitation sender
       if ($invitation->user_id == $user->id) {
-        // sender can only cancel invitaion
+        // sender can only cancel invitation
         if ($action == 'canceled') $invitation->update(['status' => $action]);
         else $this->unauthorizedExe(trans('msg.invitation.only_cancel'));
       } else {
-        // receiver can only accept or decline invitaion
+        // receiver can only accept or decline invitation
         if (in_array($action, ['accepted', 'rejected'])) $invitation->update(['status' => $action]);
         else $this->unauthorizedExe(trans('msg.invitation.only_attempt'));
       }

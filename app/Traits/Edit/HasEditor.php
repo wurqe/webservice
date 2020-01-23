@@ -21,7 +21,7 @@ trait HasEditor
         'editor_id' => $editor_id, 'editor_type' => get_class($this),
       ]);
     } else {
-      return $editing;
+      return 'no permission to edit';
     }
   }
 
