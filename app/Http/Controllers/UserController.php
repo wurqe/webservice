@@ -6,7 +6,6 @@ use App\User;
 use Illuminate\Http\Request;
 use Storage;
 use Validator;
-use App\UserMeta;
 
 class UserController extends Controller
 {
@@ -21,6 +20,29 @@ class UserController extends Controller
   {
     $user = $request->user();
     return ['balance' => $user->balance];
+  }
+
+  public function Kycdocs(Request $request){
+  $validate = Validator::make($request->all(),[
+      "photo" => 'required|image|mimes:jpeg|size:1024'
+      ]);  
+  if($validate->fails()):
+  return json_encode(["message"=>"file is bigger than 1mb or incorrect format, must be jpeg."]);
+  endif;
+  $user = User::find($request->id);
+  if($user):
+  $file = $request->file('photo');
+  if($file):         
+  $FileName = str_replace(' ', '',time().'_'.$file->getClientOriginalName());
+  $path = $request->file('photo')->storeAs('KYCDOCS', $FileName);
+  $oldkycdocs = $user->metas()->first();
+  Storage::delete("KYCDOCS/".$oldkycdocs->value); 
+  $save = $user->addMeta(["name" => "kycdocs"],["value" => $FileName]);
+  return json_encode(['message'=>"success"]);
+  endif;
+endif;
+       //$path = $user->saveImage($file,'ProfilePics');
+       /*$photoUrl = url('/storage/ProfilePics',$FileName);*/     
   }
     /**
      * Display a listing of the resource.

@@ -25,11 +25,7 @@ Route::group(['middleware' => 'localization'], function(){
   Route::get('login/google/callback', 'Auth\GoogleOauthController@handleProviderCallback');
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
-  
-  Route::put('UpdatePersonalInfo/{id}', 'UpdatePersonalInfoController@update');
-  Route::put('ProfilePics/{id}', 'UpdatePersonalInfoController@ProfileImage');
-  Route::get('getProfile/{id}', 'UserController@getprofile');
-
+  Route::post('kycdocs', 'UserController@Kycdocs');
   // test resource
   // Route::resource('tests', 'TestController');
   // guest routes

@@ -83,14 +83,13 @@ class UpdatePersonalInfoController extends Controller
     { 
         $user = User::find($id);
         if($user){   
-    $validate = $request->validate([
-    'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-    ]);
-       if(!empty($request->file('photo'))){   
-       $file = $request->file('photo');
-       $FileName = str_replace(' ', '',time().'_'.$file->getClientOriginalName());
-       $path = $request->file('photo')->storeAs('ProfilePics', $FileName);
-       $photoUrl = url('/storage/ProfilePics',$FileName);
+
+       if($request->photo){   
+       $file = $request->photo;
+       //$FileName = str_replace(' ', '',time().'_'.$file->getClientOriginalName());
+       //$path = $request->file('photo')->storeAs('ProfilePics', $FileName);
+       $path = $user->saveImage($file,'ProfilePics');
+       /*$photoUrl = url('/storage/ProfilePics',$FileName);
 
        $checkIfmetaExists = UserMeta::where('user_id',$id)->where('name','profileImage')->count();
 
@@ -106,7 +105,7 @@ class UpdatePersonalInfoController extends Controller
             "user_id" => $id,"name"=>"profileImage","value" => $FileName
            ]);
            return response(['message' => 'success']);
-       }
+       }*/
        }
     }else{
         return response(['message' => "user id doesn't exist"]);   
