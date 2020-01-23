@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Artisan;
 
 class TestController extends Controller
 {
@@ -14,6 +15,11 @@ class TestController extends Controller
     public function index()
     {
       return \App\User::all();
+    }
+    
+    public function reset()
+    {
+      // Artisan::call('app:reset');
     }
 
     /**
