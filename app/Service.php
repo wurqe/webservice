@@ -10,53 +10,17 @@ use Spatie\MediaLibrary\Models\Media;
 use \getID3;
 use App\Media as MMedia;
 use App\Traits\HasMeta;
+use App\Traits\HasImage;
 // use Tag;
 
 class Service extends Model implements HasMedia
 {
-  use \Spatie\Tags\HasTags, HasMediaTrait, HasMeta;
+  use \Spatie\Tags\HasTags, HasMediaTrait, HasMeta, HasImage;
 
-  protected $fillable = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
+  protected $fillable   = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
 
-  protected $hidden = ['pivot'];
-
-  public function saveImage($image){
-    $attachments = [];
-    if (\is_array($image)) foreach ($image as $img) $attachments[] = $this->uploadImage($img);
-    else $attachments[] = $this->uploadImage($image);
-    return $this->withAttachmentsUrl($attachments);
-  }
-
-  public function uploadImage($image){
-    $collection = 'attachments';
-    $name = $collection;
-    $type = strpos($image, ';');
-    $type = explode(':', substr($image, 0, $type))[1];
-    $ext = explode('/', $type)[1];
-    $file_name = rand().'.'.$ext;
-
-    return $this->addMediaFromBase64($image)
-    ->usingName($name)->usingFileName($file_name)
-    ->toMediaCollection($collection);
-  }
-
-  public function withAttachmentsUrl($medias = null){
-    if (!$medias) $medias = $this->getMedia('attachments');
-
-    if ($medias) {
-      $images = [];
-      for ($i=0; $i < sizeof($medias); $i++) {
-        $media = $medias[$i];
-        $image = new \stdClass();
-        $image->thumb = $media->getUrl('thumb');
-        $image->url = $media->getUrl();
-        $image->metas = $media->custom_properties;
-        $images[] = $image;
-      }
-      if ($images) $this->attachments = $images;
-    }
-    return $this;
-  }
+  protected $hidden     = ['pivot'];
+  protected $mediaNames = ['attachment' => 'attachments'];
 
   public function skills(){
     return $this->belongsToMany(Tag::class, 'taggables', 'taggable_id');

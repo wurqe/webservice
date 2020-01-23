@@ -77,6 +77,13 @@ return [
             'url'         => env('APP_URL').'/'. 'media/images/service_attachments',
         ],
 
+        'user_avatars' => [
+            'driver'      => env('FILESYSTEM_DRIVER', 'local'),
+            'root'        =>  base_path('media/images/user_avatars'),
+            'visibility'  => 'public',
+            'url'         => env('APP_URL').'/'. 'media/images/user_avatars',
+        ],
+
     ],
 
 ];
