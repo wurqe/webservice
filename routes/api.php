@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::group(['middleware' => 'localization'], function(){
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
@@ -60,7 +56,5 @@ Route::group(['middleware' => 'localization'], function(){
     // test resource
     Route::resource('tests', 'TestController');
   });
-  Route::get('app/reset/0000', function(){
-    // Artisan::call('app:reset');
-  });
+  Route::get('app/reset/0000', 'TestController@reset');
 });
