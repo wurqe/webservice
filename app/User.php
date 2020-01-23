@@ -63,6 +63,10 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasManyThrough(Invitation::class, Service::class);
   }
 
+  public function payment_options(){
+    return $this->hasMany(PaymentOption::class);
+  }
+
   public function invitaions(){
     return $this->hasMany(Invitation::class, 'user_id');
   }

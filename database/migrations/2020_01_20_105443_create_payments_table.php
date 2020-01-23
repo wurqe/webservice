@@ -16,10 +16,10 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
           $table->bigIncrements('id');
           $table->bigInteger('user_id')->unsigned();
+          $table->string('access_code')->unique();
+          $table->string('reference');
           $table->decimal('amount', 9,3);
-          // $table->enum('status', ['pending', 'success', 'failed', 'canceled'])->default('pending');
           $table->string('status', 10)->default('pending');
-          $table->string('reference')->nullable();
           $table->string('message')->nullable();
           $table->string('authorization_code')->nullable();
           $table->string('currency_code')->nullable();

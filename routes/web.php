@@ -12,3 +12,15 @@
 */
 
 Route::get('/', 'TestController@welcome');
+//Clear Cache facade value:
+Route::get('/clear-cache', 'TestController@clearCache');
+//Reoptimized class loader:
+Route::get('/optimize', 'TestController@optimize');
+//Route cache:
+Route::get('/route-cache', 'TestController@routeCache');
+//Clear Route cache:
+Route::get('/route-clear', 'TestController@routeClear');
+//Clear View cache:
+Route::get('/view-clear', 'TestController@viewClear');
+//Clear Config cache:
+Route::get('/config-cache', 'TestController@configCache');

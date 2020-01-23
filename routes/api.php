@@ -14,6 +14,9 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => 'localization'], function(){
+  // Route::get('payment/callback/{code}', 'PaymentController@callback');
+  Route::get('payments/pay/init', 'PaymentController@Astore');
+  Route::get('payments/verify/{trxref}', 'PaymentController@Averify');
   // api endpoints
   Route::get('login/facebook', 'Auth\FacebookOauthController@redirectToProvider');
   Route::get('login/facebook/callback', 'Auth\FacebookOauthController@handleProviderCallback');
@@ -29,30 +32,29 @@ Route::group(['middleware' => 'localization'], function(){
   });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
-    // resources
-    Route::apiResources([
-      'users'             => 'UserController',
-      'settings'          => 'SettingController',
-      'interests'         => 'InterestController',
-      'categories'        => 'CategoryController',
-      'invitations'       => 'InvitationController',
-      'notifications'     => 'NotificationController',
-      'jobs'              => 'WorkController',
-      'payments'          => 'PaymentController',
-      'metas'             => 'MetaController',
-    ]);
     Route::resource('services', 'ServiceController')->except(['index']);
 
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
     // jobs endpoints
-    Route::put('jobs/complete/{work}', 'WorkController@complete');
-    Route::post('jobs/rate/{work}', 'WorkController@rate');
-    Route::post('jobs/{work}/pay', 'WorkController@pay');
-    Route::get('users/wallet/balance', 'userController@balance');
-    Route::get('transactions', 'PaymentController@transactionHistory');
-    Route::get('users/wallet/details', 'UserController@wallet');
-
+    Route::put('jobs/complete/{work}',  'WorkController@complete');
+    Route::post('jobs/rate/{work}',     'WorkController@rate');
+    Route::post('jobs/{work}/pay',      'WorkController@pay');
+    Route::get('users/wallet/balance',  'userController@balance');
+    Route::get('transactions',          'PaymentController@transactionHistory');
+    Route::post('payments/verify',      'PaymentController@verify');
+    Route::get('payments/options',      'PaymentController@options');
+    Route::get('users/wallet/details',  'UserController@wallet');
+    // resources
+    Route::apiResources([
+      'users'             => 'UserController',
+      'settings'          => 'SettingController',
+      'categories'        => 'CategoryController',
+      'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
+      'jobs'              => 'WorkController',
+      'payments'          => 'PaymentController',
+    ]);
     // test resource
     Route::resource('tests', 'TestController');
   });

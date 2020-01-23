@@ -18,7 +18,7 @@ class PaymentController extends Controller
       $request->validate([
         'search'        => '',
         'orderBy'       => ['regex:(amount|message|reference|currency_code|status)', 'nullable'],
-        'pageSize'      => 'nullable|numeric',
+        'pageSize'      => 'nullable|int',
       ]);
 
       $user           = $request->user();
@@ -33,6 +33,23 @@ class PaymentController extends Controller
       ->orWhere('message', 'LIKE', '%'.$search.'%')->orWhere('currency_code', 'LIKE', '%'.$search.'%');
 
       return $payments->orderBy($orderBy ?? 'id')->paginate($pageSize ?? 15);
+    }
+
+    public function options(Request $request)
+    {
+      $request->validate([
+        'search'        => '',
+        'orderBy'       => ['regex:(id|authorization_code|bin|last4|exp_month|exp_year|channel|card_type|bank|country_code|brand|reusable)', 'nullable'],
+        'pageSize'      => 'nullable|int',
+      ]);
+
+      $user           = $request->user();
+      $orderBy        = $request->orderBy;
+      $pageSize       = $request->pageSize;
+
+      $payment_options = $user->payment_options();
+
+      return $payment_options->orderBy($orderBy ?? 'id')->paginate($pageSize);
     }
 
     public function transactionHistory(Request $request)
@@ -77,13 +94,110 @@ class PaymentController extends Controller
       $request->validate([
         'amount'        => 'required|numeric',
       ]);
-      $user             = $request->user();
       $amount           = $request->amount;
-      // $auth_url         = Paystack::getAuthorizationUrl();
+      $user             = $request->user();
+      $data             = ["amount" => $amount, "email" => $user->email];
+      $response         = Paystack::getAuthorizationResponse($data);
+      // $authorization_url= $response['authorization_url'];
 
       return $user->payments()->create([
-        'amount' => $amount,
+        'amount'        => $amount,
+        'access_code'   => $response['access_code'],
+        'reference'     => $response['reference'],
       ]);
+    }
+
+    // android test
+    public function Astore(Request $request)
+    {
+      $amount           = 1000;
+      $user             = \App\User::first();
+      $data             = ["amount" => $amount, "email" => $user->email];
+      $response         = Paystack::getAuthorizationResponse($data);
+      // $authorization_url= $response['authorization_url'];
+      $user->payments()->create([
+        'amount'        => $amount,
+        'access_code'   => $response['access_code'],
+        'reference'     => $response['reference'],
+      ]);
+      return $response['access_code'];
+    }
+    // android test
+    public function Averify(Request $request, $code)
+    {
+      \Request::instance()->query->set('trxref', $code);
+      \Request::instance()->query->set('reference', $code);
+      $paymentDetails   = Paystack::getPaymentData();
+      $payment          = Payment::where('reference', $paymentDetails->reference)->first();
+
+      if ($payment && $payment->status == 'pending') {
+        $user           = $payment->user;
+        if ($paymentDetails->status != 'success') {
+          $payment->update([
+            'status' => $paymentDetails->status,
+          ]);
+        }
+
+        if ($paymentDetails->status == 'success') {
+          $payment->update([
+            'status'              => $paymentDetails->status,
+            'message'             => $paymentDetails->message,
+            'reference'           => $paymentDetails->reference,
+            'authorization_code'  => $paymentDetails->authorization['authorization_code'],
+            'currency_code'       => $paymentDetails->currency,
+            'payed_at'            => now(),//$paymentDetails['data']['paidAt'],
+          ]);
+          $user->deposit($paymentDetails->amount);
+          if ($paymentDetails->status = "success" && $paymentDetails->authorization['reusable']) {
+            $user->payment_options()->firstOrCreate(
+              ['authorization_code' => $paymentDetails->authorization['authorization_code']],
+              $paymentDetails->authorization
+            );
+          }
+        }
+
+        return ['status' => true, 'payment' => $payment];
+      }
+      return ['status' => false, 'payment' => $payment];
+    }
+
+    public function verify(Request $request)
+    {
+      $request->validate([/*'reference' => 'required',*/ 'trxref' => 'required']);
+        // \Request::instance()->query->set('trxref', $code);
+        // \Request::instance()->query->set('reference', $code);
+        $paymentDetails   = Paystack::getPaymentData();
+        $payment          = Payment::where('reference', $paymentDetails->reference)->first();
+
+        if ($payment && $payment->status == 'pending') {
+          $user           = $payment->user;
+          if ($paymentDetails->status != 'success') {
+            $payment->update([
+              'status' => $paymentDetails->status,
+            ]);
+          }
+
+          if ($paymentDetails->status == 'success') {
+            $payment->update([
+              'status'              => $paymentDetails->status,
+              'message'             => $paymentDetails->message,
+              'reference'           => $paymentDetails->reference,
+              'authorization_code'  => $paymentDetails->authorization['authorization_code'],
+              'currency_code'       => $paymentDetails->currency,
+              'payed_at'            => now(),//$paymentDetails['data']['paidAt'],
+            ]);
+            $user->deposit($paymentDetails->amount);
+            if ($paymentDetails->status = "success" && $paymentDetails->authorization['reusable']) {
+              $user->payment_options()->firstOrCreate(
+                ['signature' => $paymentDetails->authorization['signature']],
+                $paymentDetails->authorization
+              );
+            }
+          }
+
+          return ['status' => true, 'payment' => $payment];
+        }
+        return ['status' => false, 'payment' => $payment];
     }
 
     /**
@@ -117,36 +231,7 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
-      $request->validate([
-        // 'amount'          => 'required',
-        'payment_details'    => 'required|array'
-      ]);
-      $user             = $request->user();
-      $paymentDetails   = $request->payment_details;
 
-      // check for callbacked payment
-      if($payment->status !== 'pending')
-        return ['status' => false, 'message' => trans('msg.payment.responded'), 'payment' => $payment];
-
-      if (!$paymentDetails['status']) {
-        $payment->update([
-          'status' => $paymentDetails['status'],
-        ]);
-      }
-
-      if ($paymentDetails['status']) {
-        $payment->update([
-          'status'              => $paymentDetails['data']['status'],
-          'message'             => $paymentDetails['message'],
-          'reference'           => $paymentDetails['data']['reference'],
-          'authorization_code'  => $paymentDetails['data']['authorization']['authorization_code'],
-          'currency_code'       => $paymentDetails['data']['currency'],
-          'payed_at'            => now(),//$paymentDetails['data']['paidAt'],
-        ]);
-        $user->deposit($paymentDetails['data']['amount']);
-      }
-
-      return ['status' => true, 'payment' => $payment];
     }
 
     /**
