@@ -15,13 +15,16 @@ class TestController extends Controller
     public function index(Request $request)
     {
       $user = $request->user();
+      $invitation = $user->invitations()->findOrFail(10);
       $service = $user->services()->first();
       // return $user->edit($service, ['amount' => 500], 'price', $user);
       // return $service->edits;
       // return $user->moderate($service->edits()->first(), 'accepted');
       // return $user->editing;
       // return $user->edited;
-      return $service->edited;
+      // return $service->edited;
+      // return [$user->hasPendingEditFor($invitation)];
+      return [$invitation->otherBider($user)];
     }
 
     public function reset()

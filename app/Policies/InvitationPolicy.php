@@ -54,7 +54,7 @@ class InvitationPolicy
     public function update(User $user, Invitation $invitation)
     {
       return $invitation->user_id == $user->id
-          || $invitation->service->user_id == $user->id ;
+          || $invitation->receiver_id == $user->id ;
     }
 
     /**

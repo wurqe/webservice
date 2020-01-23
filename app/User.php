@@ -27,7 +27,10 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta, HasImage, HasModerator, HasEditor;
 
   public function bid($invitation, $otherUser, int $amount){
-    return $this->edit($invitation, ['amount' => $amount], 'price', $this, $otherUser);
+    // check if user trying to make bid on pending invitation bid
+    if ($this->hasPendingEditFor($invitation)) return null;
+
+    return $this->edit($invitation, ['amount' => $amount], 'price', $otherUser);
   }
 
   public function willEdits() : array {return [Service::class, Invitation::class];}

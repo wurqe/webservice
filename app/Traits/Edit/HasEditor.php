@@ -9,6 +9,11 @@ use App\Edit;
  */
 trait HasEditor
 {
+  public function hasPendingEditFor(Editable $editing){
+    return $this->pending_edits()->where('edit_id', $editing->getKey())
+    ->where('edit_type', get_class($editing))->first();
+  }
+
   public function edit(Editable $editing, array $changes, string $name = 'default', CanModerate $moderator = null){
     if ($this->canEditThis($editing)) {
       $moderator_id = $moderator ? $moderator->getKey() : null;
@@ -38,6 +43,10 @@ trait HasEditor
 
   public function editing(){
     return $this->morphMany(Edit::class, 'editor');
+  }
+
+  public function pending_edits(){
+    return $this->editing()->where('status', 'pending');
   }
 
   public function edited(){

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Invitation;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InvitationController extends Controller
 {
@@ -32,7 +33,7 @@ class InvitationController extends Controller
 
       // if ($search) $invitations->where('title', 'LIKE', '%'.$search.'%');
 
-      return $invitations->paginate($pageSize ?? null);
+      return $invitations->with('bids')->paginate($pageSize ?? null);
     }
 
     /**
@@ -111,20 +112,46 @@ class InvitationController extends Controller
     {
       $this->authorize('update', $invitation);
       $request->validate([
-        'action' => ['required', 'regex:(accepted|rejected|canceled)'],
+        'action'     => [
+          Rule::requiredIf(function () use ($request) {
+            return !$request->bid_id && !$request->bid_amount;
+          }),
+          'regex:(accepted|rejected|canceled)'
+        ],
+        'bid_id'     => 'int',
+        'bid_amount' => 'numeric',
+        'bid_action' => [
+          Rule::requiredIf(function () use ($request) {
+            return !!$request->bid_id;
+          }),
+          'regex:(accepted|rejected|canceled)'
+        ],
       ]);
-      $user = $request->user();
-      $action = $request->action;
+
+      $user       = $request->user();
+      $action     = $request->action;
+      $bid_action = $request->bid_action;
+      $bid_id     = $request->bid_id;
+      $bid        = null;
+      if($bid_id) $bid = $invitation->edits()->findOrFail($bid_id);
+      $bid_amount = $request->bid_amount;
+      if($action){
       // if the user is the invitation sender
-      if ($invitation->user_id == $user->id) {
-        // sender can only cancel invitation
-        if ($action == 'canceled') $invitation->update(['status' => $action]);
-        else $this->unauthorizedExe(trans('msg.invitation.only_cancel'));
-      } else {
-        // receiver can only accept or decline invitation
-        if (in_array($action, ['accepted', 'rejected'])) $invitation->update(['status' => $action]);
-        else $this->unauthorizedExe(trans('msg.invitation.only_attempt'));
+        if ($invitation->isSender($user)) {
+          // sender can only cancel invitation
+          if ($action == 'canceled') $invitation->cancel();
+          else $this->unauthorizedExe(trans('msg.invitation.only_cancel'));
+        } else {
+          // receiver can only accept or decline invitation
+          if (in_array($action, ['accepted', 'rejected'])) $invitation->attempt($action);
+          else $this->unauthorizedExe(trans('msg.invitation.only_attempt'));
+        }
       }
+      // attempt bid
+      if($action == 'accepted' || ($bid_amount || $bid_action)) {
+        $invitation->attemptBid($user, $bid, $bid_action ?? $action, $bid_amount);
+      }
+
       return ['status' => true, 'message' => trans('msg.invitation.updated'), 'invitation' => $invitation];
     }
 
