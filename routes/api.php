@@ -25,6 +25,8 @@ Route::group(['middleware' => 'localization'], function(){
   Route::get('login/google/callback', 'Auth\GoogleOauthController@handleProviderCallback');
   Route::post('login', 'Auth\LoginController@login');
   Route::post('register', 'Auth\RegisterController@register');
+  Route::put('userprofileupdate', 'UserController@UserProfileUpdate');
+  Route::post('kycdocs', 'UserController@Kycdocs');
   // test resource
   // Route::resource('tests', 'TestController');
   // guest routes
@@ -34,7 +36,7 @@ Route::group(['middleware' => 'localization'], function(){
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
-    Route::post('kycdocs', 'UserController@Kycdocs');
+    
     Route::apiResources([
       'users'             => 'UserController',
       'settings'          => 'SettingController',
