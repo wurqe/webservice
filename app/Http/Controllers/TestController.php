@@ -21,6 +21,11 @@ class TestController extends Controller
     {
       // Artisan::call('app:reset');
     }
+    
+    public function welcome()
+    {
+      return view('welcome');
+    }
 
     /**
      * Show the form for creating a new resource.
