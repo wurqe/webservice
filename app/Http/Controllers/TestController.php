@@ -16,6 +16,16 @@ class TestController extends Controller
     {
       return \App\User::all();
     }
+    
+    public function reset()
+    {
+      // Artisan::call('app:reset');
+    }
+    
+    public function welcome()
+    {
+      return view('welcome');
+    }
 
     public function reset()
     {
