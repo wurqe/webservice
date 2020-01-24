@@ -16,6 +16,7 @@ class CreateInvitationsTable extends Migration
         Schema::create('invitations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('receiver_id')->unsigned();
             $table->bigInteger('service_id')->unsigned();
             $table->enum('status', ['pending', 'accepted', 'rejected', 'canceled'])->default('pending');
             $table->mediumText('comment')->nullable();
@@ -25,6 +26,7 @@ class CreateInvitationsTable extends Migration
 
         Schema::table('invitations', function (Blueprint $table) {
           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+          $table->foreign('receiver_id')->references('id')->on('users')->onDelete('cascade');
           $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
          });
     }

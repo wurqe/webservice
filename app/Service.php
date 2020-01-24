@@ -11,19 +11,32 @@ use \getID3;
 use App\Media as MMedia;
 use App\Traits\HasMeta;
 use App\Traits\HasImage;
-// use Tag;
+use App\Traits\Edit\HasEdit;
+use App\Interfaces\Edit\Editable;
 
-class Service extends Model implements HasMedia
+class Service extends Model implements HasMedia, Editable
 {
-  use \Spatie\Tags\HasTags, HasMediaTrait, HasMeta, HasImage;
+  use \Spatie\Tags\HasTags, HasMediaTrait, HasMeta, HasImage, HasEdit;
 
   protected $fillable   = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
 
   protected $hidden     = ['pivot'];
   protected $mediaNames = ['attachment' => 'attachments'];
 
+  public function calculateAmount()
+  {
+    $amount       = $this->amount;
+    $per          = $amount * (1 / 100);
+    $per_amount   = $amount - $per;
+    return $per_amount;
+  }
+
   public function skills(){
     return $this->belongsToMany(Tag::class, 'taggables', 'taggable_id');
+  }
+
+  public function isWorkStarted() {
+    return $this->work;
   }
 
   public function user(){

@@ -37,16 +37,15 @@ Route::group(['middleware' => 'localization'], function(){
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
     // jobs endpoints
-    Route::put('jobs/complete/{work}',       'WorkController@complete');
-    Route::post('jobs/rate/{work}',          'WorkController@rate');
-    Route::post('jobs/{work}/pay',           'WorkController@pay');
-    Route::get('users/wallet/balance',       'userController@balance');
-    Route::get('transactions',               'PaymentController@transactionHistory');
-    Route::post('payments/verify',           'PaymentController@verify');
-    Route::get('payments/options',           'PaymentController@options');
-    Route::get('users/wallet/details',       'UserController@wallet');
-    // Route::post('services/applications/{service}',  'ServiceApplicationController@store');
-    // Route::put('services/applications/{application}',  'ServiceApplicationController@update');
+    Route::put('jobs/complete/{work}',  'WorkController@complete');
+    Route::post('jobs/rate/{work}',     'WorkController@rate');
+    Route::post('jobs/{work}/pay',      'WorkController@pay');
+    Route::get('users/wallet/balance',  'userController@balance');
+    Route::get('transactions',          'PaymentController@transactionHistory');
+    Route::post('payments/verify',      'PaymentController@verify');
+    Route::get('payments/options',      'PaymentController@options');
+    Route::get('users/wallet/details',  'UserController@wallet');
+    Route::put('bids',  'BidController@attemptBid');
     // resources
     Route::apiResources([
       'users'             => 'UserController',
@@ -57,6 +56,7 @@ Route::group(['middleware' => 'localization'], function(){
       'notifications'     => 'NotificationController',
       'jobs'              => 'WorkController',
       'payments'          => 'PaymentController',
+      'bids'              => 'BidController',
     ]);
     // test resource
     Route::resource('tests', 'TestController');
