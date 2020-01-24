@@ -23,8 +23,20 @@ class Service extends Model implements HasMedia, Editable
   protected $hidden     = ['pivot'];
   protected $mediaNames = ['attachment' => 'attachments'];
 
+  public function calculateAmount()
+  {
+    $amount       = $this->amount;
+    $per          = $amount * (1 / 100);
+    $per_amount   = $amount - $per;
+    return $per_amount;
+  }
+
   public function skills(){
     return $this->belongsToMany(Tag::class, 'taggables', 'taggable_id');
+  }
+
+  public function isWorkStarted() {
+    return $this->work;
   }
 
   public function user(){

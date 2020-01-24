@@ -10,11 +10,50 @@ use Bavix\Wallet\Traits\HasWallet;
 use Bavix\Wallet\Interfaces\Product;
 use Bavix\Wallet\Interfaces\Customer;
 use Bavix\Wallet\Interfaces\Taxable;
+use App\Traits\Edit\HasEdit;
+use App\Interfaces\Edit\Editable;
+use App\Traits\Bid\HasBid;
 
-class Work extends Model implements ReviewRateable, Product, Taxable
+class Work extends Model implements ReviewRateable, Product, Taxable, Editable
 {
-  use ReviewRateableTrait, HasWallet;
-  protected $fillable = ['status', 'invitation_id', 'service_id', 'completed_at', 'amount', 'amount_currency', 'payment_method'];
+  use ReviewRateableTrait, HasWallet, HasEdit, HasBid;
+  protected $fillable = ['status', 'invitation_id', 'service_id', 'completed_at', 'amount', 'amount_currency'];
+
+  public function afterBid($bid_action)
+  {
+    if($bid_action == 'accepted'){
+      // if(!$this->isCompleted()) {
+      //   $this->complete();
+      //   return $this;
+      // }
+    }
+    return $this;
+  }
+
+  public function otherBider($moderator, $user, $bid = null){
+    if($moderator) return $moderator;
+    if($bid)       return $bid->editor;
+    if($user)      return $user;
+  }
+
+  public static function startWork(Invitation $invitation)
+  {
+    $user = $invitation->user;
+    if ($user->can('work', $invitation) && $user->can('create', Work::class)) {
+      // check started work
+      if($work        = $invitation->isWorkStarted()) return $work;
+
+      $acceptedBid    = $invitation->acceptedBid();
+      $amount         = $acceptedBid ? $acceptedBid['amount'] : $invitation->amount;
+      $percentage     = 99;//99% e.g
+      $calculated     = $amount / (100/$percentage);
+
+      return $invitation->work()->create([
+        'service_id'        => $invitation->service_id,
+        'amount'            => $calculated,
+      ]);
+    }
+  }
 
   public function canBuy(Customer $customer, int $quantity = 1, bool $force = null): bool
   {
@@ -27,7 +66,16 @@ class Work extends Model implements ReviewRateable, Product, Taxable
 
   public function getAmountProduct(Customer $customer = null): int
   {
-      return $this->amount ?? 0;
+    $acceptedBid = $this->acceptedBid();
+    return $acceptedBid ? $acceptedBid['amount']: $this->amount ?? 0;
+  }
+
+  public function calculateAmount()
+  {
+    $amount       = $this->getAmountProduct();
+    $per          = $amount * (1 / 100);
+    $per_amount   = $amount - $per;
+    return $per_amount;
   }
 
   public function getFeePercent() : float

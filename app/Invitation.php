@@ -4,11 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Edit\HasEdit;
+use App\Traits\Bid\HasBid;
 use App\Interfaces\Edit\Editable;
 
 class Invitation extends Model implements Editable
 {
-  use HasEdit;
+  use HasEdit, HasBid;
   protected $fillable = ['hired', "user_id", "receiver_id", "service_id", "comment", 'status'];
   // protected $hidden = ['edits'];
 
@@ -16,27 +17,28 @@ class Invitation extends Model implements Editable
     return $this->work;
   }
 
-  public function attemptBid(User $moderator, $bid, $bid_action, $bid_amount = null){
-    if($bid) $moderator->moderate($bid, $bid_action);
-    if($bid_action == 'accepted') $this->accept();
-    if($bid_amount && $bid_action != 'accepted') $moderator->bid($this, $this->otherBider($moderator, $bid), $bid_amount);
-    $this->loadBids();
-    return $this;
+  public function afterBid($bid_action)
+  {
+    if($bid_action == 'accepted'){
+      if($this->isAccepted() && $this->hasInitiatedContract()){
+        return Work::startWork($this);
+      }
+      if(!$this->isAccepted()) {
+        $this->accept();
+        return $this;
+      }
+    }
   }
 
-  public function otherBider($user, $bid = null){
-    if($bid) return $bid->editor;
+  public function otherBider($moderator, $user, $bid = null){
+    if($moderator)  return $moderator;
+    if($bid)        return $bid->editor;
+    if($user)       return $user;
     return $this->user_id == $user->id ? $this->receiver : $this->user;
   }
 
   public function isSender(User $user) {
     return $this->user_id == $user->id;
-  }
-
-  public function loadBids(){
-    $this->bids = $this->edits;
-    $this->makeHidden(['edits']);
-    return $this;
   }
 
   public function accept(){
@@ -65,12 +67,12 @@ class Invitation extends Model implements Editable
     return $this->update(['hired' => 1]);
   }
 
-  public function isAccepted() {
-    return $this->status == 'accepted';
+  public function hasInitiatedContract() {
+    return $this->hired;
   }
 
-  public function bids(){
-    return $this->edits();
+  public function isAccepted() {
+    return $this->status == 'accepted';
   }
 
   public function user(){

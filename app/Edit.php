@@ -32,6 +32,15 @@ class Edit extends Model
   //   return $this;
   // }
 
+
+  public function editor(){
+    return $this->belongsTo(User::class, 'editor_id');
+  }
+
+  public function moderator(){
+    return $this->belongsTo(User::class, 'moderator_id');
+  }
+
   public function editable(): MorphTo{
     return $this->morphTo();
   }

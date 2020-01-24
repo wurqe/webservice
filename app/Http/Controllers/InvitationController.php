@@ -63,18 +63,18 @@ class InvitationController extends Controller
 
       $user         = $request->user();
       $receiver_id  = $request->receiver_id;
-      $bid          = $request->bid_amount;
+      $bid_amount   = $request->bid_amount;
       $receiver     = $user->findOrFail($receiver_id);
       $service      = \App\Service::findOrFail($request->service_id);
 
       // check pending invitation
       $pending    = $user->pending_invitations()->where('service_id', $service->id)->first();
-      if($pending) return ['status' => false, 'invitation' => $pending->loadBids(), 'message' => trans('msg.invitation.pending')];
+      if($pending) return ['status' => false, 'invitation' => $pending->load('bids'), 'message' => trans('msg.invitation.pending')];
 
       // message interface
       // --------->
 
-      $invitation = $user->invite($service, $receiver, $bid);
+      $invitation = $user->invite($service, $receiver, $bid_amount);
 
       return ['status' => true, 'invitation' => $invitation, 'message' => trans('msg.invitation.sent')];
     }

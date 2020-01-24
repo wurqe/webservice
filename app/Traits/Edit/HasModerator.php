@@ -7,17 +7,18 @@ use App\Edit;
  */
 trait HasModerator
 {
-  public function moderate(Edit $moderate, string $status) : Edit{
-    if ($this->canModerateThis($moderate)) {
-      $moderate->update(['status' => $status]);
-      return $moderate;
+  public function moderate(Edit $edit, string $status) : Edit{
+    if ($this->canModerateThis($edit)) {
+      $edit->update(['status' => $status]);
+      return $edit;
     } else {
-      return $moderate;
+      return $edit;
     }
   }
 
-  private function canModerateThis(Edit $moderate){
-    return $moderate->moderator_id == $this->getKey();
+  private function canModerateThis(Edit $edit){
+    // dd($edit->moderator_id, $this->getKey());
+    return $edit->moderator_id == $this->getKey();
   }
 
   public function moderates(){
