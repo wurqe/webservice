@@ -16,14 +16,16 @@ class CreateServiceApplicationsTable extends Migration
       Schema::create('service_applications', function (Blueprint $table) {
         $table->bigIncrements('id');
         $table->bigInteger('user_id')->unsigned();
+        $table->bigInteger('receiver_id')->unsigned();
         $table->bigInteger('service_id')->unsigned();
         $table->string('comment')->nullable();
-        $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+        $table->enum('status', ['pending', 'accepted', 'rejected', 'canceled'])->default('pending');
         $table->timestamps();
       });
 
       Schema::table('service_applications', function (Blueprint $table) {
         $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        $table->foreign('receiver_id')->references('id')->on('users')->onDelete('cascade');
         $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
       });
     }

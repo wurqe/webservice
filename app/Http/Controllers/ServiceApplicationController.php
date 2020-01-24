@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ServiceApplication;
+use App\Service;
 use Illuminate\Http\Request;
 
 class ServiceApplicationController extends Controller
@@ -35,7 +36,22 @@ class ServiceApplicationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $user       = $request->user();
+      $comment    = $request->comment;
+      $service_id = $request->service_id;
+      $service    = Service::findOrFail($service_id);
+      // check if a seeking service
+      if(!$service->isSeeking()) return ['status' => false, 'message' => trans('msg.application.cannot_apply_provide')];
+      // check pending application
+      if($pending = $user->hasPendingApp($service)) return ['status' => false, 'application' => $pending, 'message' => trans('msg.application.pending')];
+
+      $application = $user->applications()->create([
+        'service_id'      => $service->id,
+        'receiver_id'     => $service->user_id,
+        'comment'         => $comment
+      ]);
+
+      return ['status' => true, 'application' => $application, 'message' => trans('msg.application.sent')];
     }
 
     /**
@@ -67,9 +83,25 @@ class ServiceApplicationController extends Controller
      * @param  \App\ServiceApplication  $serviceApplication
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ServiceApplication $serviceApplication)
+    public function update(Request $request, ServiceApplication $application)
     {
-        //
+      $this->authorize('update', $application);
+      $request->validate([
+        'action' => ['required', 'regex:(accepted|rejected|canceled)'],
+      ]);
+      $user = $request->user();
+      $action = $request->action;
+      // if the user is the application sender
+      if ($application->user_id == $user->id) {
+        // sender can only cancel invitaion
+        if ($action == 'canceled') $application->update(['status' => $action]);
+        else $this->unauthorizedExe(trans('msg.application.only_cancel'));
+      } else {
+        // receiver can only accept or decline invitaion
+        if (in_array($action, ['accepted', 'rejected'])) $application->update(['status' => $action]);
+        else $this->unauthorizedExe(trans('msg.application.only_attempt'));
+      }
+      return ['status' => true, 'message' => trans('msg.application.updated'), 'application' => $application];
     }
 
     /**

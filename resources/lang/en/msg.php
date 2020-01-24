@@ -12,6 +12,14 @@ return [
     'only_attempt'    => 'You can only accept or reject this Invitation',
     'updated'         => 'Invitation updated successfully',
   ],
+  'application'       => [
+    'pending'         => 'Application already pending',
+    'sent'            => 'Application sent successfully',
+    'cannot_apply_provide'  => 'You cannot apply for a providing service',
+    'only_cancel'     => 'You can only cancel this Application',
+    'only_attempt'    => 'You can only accept or reject this Application',
+    'updated'         => 'Application updated successfully',
+  ],
   'service'           => [
     'not_hired'       => 'You cannot initiate contract that has not been accepted',
     'hired'           => 'Contract initiated successfully',

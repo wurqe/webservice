@@ -48,6 +48,11 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     ]);
   }
 
+  public function hasPendingApp($service)
+  {
+    return $this->pending_applications()->where('service_id', $service->id)->first();
+  }
+
   public function grantMeToken(){
     $token          =  $this->createToken('MyApp');
 
@@ -90,6 +95,10 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function applications(){
     return $this->hasMany(ServiceApplication::class);
+  }
+
+  public function pending_applications(){
+    return $this->applications()->where('status', 'pending');
   }
 
   public function settings(){
