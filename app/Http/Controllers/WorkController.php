@@ -39,32 +39,20 @@ class WorkController extends Controller
     {
       $request->validate([
         'invitation_id'   => 'required|numeric',
-        'payment_method'  => ['regex:(wurqe|cash)'],
-        'amount'          => 'numeric',
-        // 'amount_currency' => 'numeric',
       ]);
       $invitation_id  = $request->invitation_id;
       $invitation     = Invitation::findOrFail($invitation_id);
       $service_id     = $invitation->service_id;
       $service        = $invitation->service;
-      $amount         = $invitation->amount ?? $service->amount ?? 0;
-      $payment_method = $request->payment_method ?? $invitation->payment_method ?? 'wurqe';
-      $percentage     = 99;//99% e.g
 
       $this->authorize('work', $invitation);
       $this->authorize('create', Work::class);
 
       // check started work
       if($work    = $invitation->isWorkStarted()) return ['status' => false, 'work' => $work, 'message' => trans('msg.work.started')];
-      $calculated = $amount / (100/$percentage);
 
-      $work = $service->work()->create([
-        'invitation_id'     => $invitation_id,
-        'amount'            => $calculated,
-        'payment_method'    => $payment_method,
-      ]);
-
-      return ['status' => true, 'work' => $work, 'message' => trans('msg.work.starts')];
+      $work = Work::startWork($invitation);
+      return ['status' => true, 'job' => $work, 'message' => trans('msg.work.starts')];
     }
 
     /**
@@ -158,17 +146,13 @@ class WorkController extends Controller
     public function pay(Request $request, Work $work){
       $user         = $request->user();
       $otherUser    = $work->service->user;
-      $amount       = $work->getAmountProduct();
-      $per          = $amount * (1 / 100);
-      $per_amount   = $amount - $per;
+      $per_amount   = $work->calculateAmount();
 
-      // dd($per_amount, $amount, $amount - $per_amount);
       // check already paid
       if($user->paid($work))
         return ['status' => false, 'message' => trans('msg.work.paid')];
       if ($user->safePay($work)) {
         $work->transfer($otherUser, $per_amount);
-        // $user->transfer($otherUser, $per_amount);
         return ['status' => true, 'message' => trans('msg.work.pays')];
       } else {
         return ['status' => false, 'message' => trans('msg.work.pay_failed')];

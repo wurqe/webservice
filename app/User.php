@@ -17,22 +17,31 @@ use Carbon\Carbon;
 use Bavix\Wallet\Interfaces\Taxable;
 use App\Traits\HasMeta;
 use App\Traits\HasImage;
+use App\Traits\Edit\HasEditor;
+use App\Traits\Edit\HasModerator;
+use App\Interfaces\Edit\CanModerate;
+use App\Interfaces\Edit\CanEdit;
+use App\Traits\Bid\HasBid;
 
-class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable
+class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable, CanEdit, CanModerate
 {
-  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta, HasImage;
+  use Notifiable, CanPay, HasMediaTrait, HasApiTokens, HasMeta, HasImage, HasModerator, HasEditor, HasBid;
+
+  // public function bid($invitation, $otherUser, int $amount){
+  //   // check if user trying to make bid on pending invitation bid
+  //   if ($this->hasPendingEditFor($invitation)) return null;
+  //
+  //   return $this->edit($invitation, ['amount' => $amount], 'price', $otherUser);
+  // }
+
+  public function willEdits() : array {return [Service::class, Invitation::class, Work::class];}
+  public function willModerates() : array {return [Service::class, Invitation::class, Work::class];}
 
   public function addSetting($name, $value){
     $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);
     $this->load('settings');
     return $meta;
   }
-
-  // public function addSetting($metas){
-  //   $meta = $this->settings()->updateOrCreate($metas);
-  //   $this->load('settings');
-  //   return $meta;
-  // }
 
   public function getFeePercent() : float{
     return 1;//1%
@@ -42,10 +51,28 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $work->rating($rating, $this);
   }
 
-  public function invite(Service $service){
-    return $this->invitaions()->create([
-      'service_id'    => $service->id,
+  public function invite(Service $service, User $otherUser, $bid_amount = null){
+    $invitation           = $this->invitations()->create([
+      'service_id'        => $service->id,
+      'receiver_id'       => $otherUser->id,
     ]);
+
+    if($invitation){
+      $invitation->attemptBid($this, null, null, $bid_amount, $otherUser);
+    }
+
+    return $invitation;
+  }
+
+  public function afterBid($bid_action)
+  {
+    if($bid_action == 'accepted') $this->accept();
+  }
+
+  public function otherBider($moderator, $user, $bid = null){
+    if($moderator) return $moderator;
+    if($bid) return $bid->editor;
+    return $user;
   }
 
   public function grantMeToken(){
@@ -68,16 +95,16 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasMany(PaymentOption::class);
   }
 
-  public function invitaions(){
+  public function invitations(){
     return $this->hasMany(Invitation::class, 'user_id');
   }
 
-  public function received_invitaions(){
-    return $this->hasManyThrough(Invitation::class, Service::class);
+  public function received_invitations(){
+    return $this->hasMany(Invitation::class, 'receiver');
   }
 
-  public function pending_invitaions(){
-    return $this->invitaions()->where('status', 'pending');
+  public function pending_invitations(){
+    return $this->invitations()->where('status', 'pending');
   }
 
   public function payments(){

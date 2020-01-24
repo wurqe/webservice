@@ -45,6 +45,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('payments/verify',      'PaymentController@verify');
     Route::get('payments/options',      'PaymentController@options');
     Route::get('users/wallet/details',  'UserController@wallet');
+    Route::put('bids',  'BidController@attemptBid');
     // resources
     Route::apiResources([
       'users'             => 'UserController',
@@ -54,6 +55,7 @@ Route::group(['middleware' => 'localization'], function(){
       'notifications'     => 'NotificationController',
       'jobs'              => 'WorkController',
       'payments'          => 'PaymentController',
+      'bids'              => 'BidController',
     ]);
     // test resource
     Route::resource('tests', 'TestController');
