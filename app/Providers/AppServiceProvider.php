@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Validator;
 use \Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
 
+use App\Observers\InvitationObserver;
+use App\Invitation;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -31,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+      Invitation::observe(InvitationObserver::class);
+
       Validator::extend('imageable', function ($attribute, $value, $params, $validator) {
         if (!$value) return true;
         try {
