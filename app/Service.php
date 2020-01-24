@@ -51,6 +51,10 @@ class Service extends Model implements HasMedia, Editable
     return $this->hasMany(Invitation::class);
   }
 
+  public function isSeeking(){
+    return $this->type == 'seek';
+  }
+
   public function applications(){
     return $this->hasMany(ServiceApplication::class);
   }

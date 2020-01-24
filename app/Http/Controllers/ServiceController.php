@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Service;
+use App\ServiceApplication;
 use App\Invitation;
 use Illuminate\Http\Request;
 
