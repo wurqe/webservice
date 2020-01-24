@@ -13,9 +13,25 @@ class ServiceApplicationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $request->validate([
+        'type'          => ['regex:(received|sent)'],
+        'pageSize'      => 'int',
+      ]);
+
+      $user           = $request->user();
+      $user_id        = $user ? $user->id : 0;
+      $pageSize       = $request->pageSize;
+      $type           = $request->type ?? 'received';
+
+      if ($type == 'sent') {
+        $applications = $user->sent_applications();
+      } else {
+        $applications = $user->received_applications();
+      }
+
+      return $applications->paginate($pageSize);
     }
 
     /**

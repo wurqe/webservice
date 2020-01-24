@@ -93,12 +93,16 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasMany(Service::class);
   }
 
-  public function applications(){
-    return $this->hasMany(ServiceApplication::class);
-  }
-
   public function pending_applications(){
     return $this->applications()->where('status', 'pending');
+  }
+
+  public function received_applications(){
+    return $this->hasMany(ServiceApplication::class, 'receiver_id');
+  }
+
+  public function sent_applications(){
+    return $this->hasMany(ServiceApplication::class);
   }
 
   public function settings(){
