@@ -61,5 +61,6 @@ Route::group(['middleware' => 'localization'], function(){
     // test resource
     Route::resource('tests', 'TestController');
   });
+  Route::get('users/count', 'TestController@userCount');
   Route::get('app/reset/0000', 'TestController@reset');
 });
