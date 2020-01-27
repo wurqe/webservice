@@ -18,6 +18,11 @@ trait HasBid
     }
   }
 
+  public function acceptedBidAmount(){
+    $bid = $this->acceptedBid();
+    return $bid ? $bid['amount'] : null;
+  }
+
   public function attemptBid(User $user, $bid, $bid_action, $bid_amount = null, CanModerate $moderator = null, $name = null){
     if($bid && $bid->status != 'accepted') $user->moderate($bid, $bid_action);
     if($bid_amount && $bid_action != 'accepted') $user->bid($this, ['amount' => $bid_amount], $this->otherBider($moderator, $user, $bid), $name);

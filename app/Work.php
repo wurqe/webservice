@@ -43,8 +43,7 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
       // check started work
       if($work        = $invitation->isWorkStarted()) return $work;
 
-      $acceptedBid    = $invitation->acceptedBid();
-      $amount         = $acceptedBid ? $acceptedBid['amount'] : $invitation->amount;
+      $amount         = $invitation->acceptedBidAmount() ?? $invitation->service->amount;
       $percentage     = 99;//99% e.g
       $calculated     = $amount / (100/$percentage);
 
@@ -66,12 +65,12 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
 
   public function getAmountProduct(Customer $customer = null): int
   {
-    $acceptedBid = $this->acceptedBid();
-    return $acceptedBid ? $acceptedBid['amount']: $this->amount ?? 0;
+    return $this->acceptedBidAmount() ?? $this->amount ?? 0;
   }
 
-  public function calculateAmount()
+  public function calculateAmount($invitation = null)
   {
+    // $acceptedBid  = $invitation ? $invitation->acceptedBid() : 0;
     $amount       = $this->getAmountProduct();
     $per          = $amount * (1 / 100);
     $per_amount   = $amount - $per;

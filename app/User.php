@@ -22,6 +22,7 @@ use App\Traits\Edit\HasModerator;
 use App\Interfaces\Edit\CanModerate;
 use App\Interfaces\Edit\CanEdit;
 use App\Traits\Bid\HasBid;
+use App\Notifications\Work\NewReview;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable, CanEdit, CanModerate
 {
@@ -48,7 +49,10 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function rate(Work $work, array $rating){
-    return $work->rating($rating, $this);
+    $user = $work->invitation->receiver;
+    $review = $work->rating($rating, $this);
+    $user->notify(new NewReview($review, $work, $user, $work->invitation));
+    return $review;
   }
 
   public function invite(Service $service, User $otherUser, $bid_amount = null){

@@ -1,29 +1,26 @@
 <?php
 
-namespace App\Notifications\Invitation;
+namespace App\Notifications\Work;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class InvitationUpdate extends Notification
+class WorkStart extends Notification
 {
     use Queueable;
-    private $invitation, $user, $action, $name, $title;
+    private $title, $work;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($invitation, $user, string $action)
+    public function __construct($work, $title)
     {
-      $this->invitation = $invitation;
-      $this->user       = $user;
-      $this->name       = "{$user->firstname} {$user->lastname}";
-      $this->action     = $action;
-      $this->title      = $invitation->service->title;
+      $this->work   = $work;
+      $this->title  = $title;
     }
 
     /**
@@ -59,16 +56,14 @@ class InvitationUpdate extends Notification
      */
     public function toDatabase($notifiable)
     {
-      $action = $this->action;
-      list('id' => $id, 'service_id' => $service_id, 'receiver_id' => $receiver_id, 'user_id' => $user_id) = $this->invitation;
+      list('id' => $id, 'invitation_id' => $invitation_id, 'service_id' => $service_id) = $this->work;
       return [
-        'type'            => 'invitation_attempt',
-        'invitation_id'   => $id,
+        'type'            => 'work_started',
+        'work_id'         => $id,
+        'invitation_id'   => $invitation_id,
         'service_id'      => $service_id,
-        'receiver_id'     => $receiver_id,
-        'user_id'         => $user_id,
-        'title'           => $action == 'hired' ? trans('notify.service.hired.title') : trans('notify.invitation.update.title'),
-        'message'         => $action == 'hired' ? trans('notify.service.hired.message', ['name' => $this->name, 'title' => $this->title]) : trans('notify.invitation.update.message', ['name' => $this->name, 'action' => $action, 'title' => $this->title]),
+        'title'           => trans('notify.work.started.title'),
+        'message'         => trans('notify.work.started.message', ['title' => $this->title]),
       ];
     }
 }
