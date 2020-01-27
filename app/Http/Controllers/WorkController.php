@@ -145,14 +145,15 @@ class WorkController extends Controller
 
     public function pay(Request $request, Work $work){
       $user         = $request->user();
-      $otherUser    = $work->service->user;
-      $per_amount   = $work->calculateAmount();
+      // $otherUser    = $work->service->user;
+      // $per_amount   = $work->calculateAmount();
 
       // check already paid
       if($user->paid($work))
         return ['status' => false, 'message' => trans('msg.work.paid')];
       if ($user->safePay($work)) {
-        $work->transfer($otherUser, $per_amount);
+        $user->pay4Job($work);
+        // $work->transfer($otherUser, $per_amount);
         return ['status' => true, 'message' => trans('msg.work.pays')];
       } else {
         return ['status' => false, 'message' => trans('msg.work.pay_failed')];

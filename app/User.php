@@ -23,6 +23,7 @@ use App\Interfaces\Edit\CanModerate;
 use App\Interfaces\Edit\CanEdit;
 use App\Traits\Bid\HasBid;
 use App\Notifications\Work\NewReview;
+use App\Notifications\Wallet\WalletUpdate;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable, CanEdit, CanModerate
 {
@@ -37,6 +38,21 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function willEdits() : array {return [Service::class, Invitation::class, Work::class];}
   public function willModerates() : array {return [Service::class, Invitation::class, Work::class];}
+
+  public function pay4Job(Work $work)
+  {
+    $otherUser    = $work->service->user;
+    $per_amount   = $work->calculateAmount();
+
+    $transfer = $work->transfer($otherUser, $per_amount);
+    $name = "{$this->firstname} {$this->lastname}";
+    $otherName = "{$otherUser->firstname} {$otherUser->lastname}";
+
+    $otherUser->notify(new WalletUpdate('received', $name, $otherName, $per_amount, $work->id, $work->service->id));
+    $this->notify(new WalletUpdate('sent', $otherName, $name, $per_amount, $work->id, $work->service->id));
+
+    return $transfer;
+  }
 
   public function addSetting($name, $value){
     $meta = $this->settings()->updateOrCreate(['name' => $name], ['name' => $name, 'value' => $value]);

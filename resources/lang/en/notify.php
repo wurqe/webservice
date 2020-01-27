@@ -23,8 +23,14 @@ return [
     'completed'       => ['title' => 'Job Compeleted', 'message' => 'The \':title\' job is now completed'],
     'new_review'      => ['title' => 'New Job Review from :name', 'message' => ':name gave you :rating star rating on \':title\' job review']
   ],
+  'wallet'            => [
+    'updated'         => [
+      'sent'          => ['title' => 'Payment Sent',     'message' => 'you :action :currency:amount to :otherName'],
+      'received'      => ['title' => 'Payment Received', 'message' => 'you :action :currency:amount from :name'],
+    ]
+  ],
   'payment'           => [
   ],
-  'review'           => [
+  'review'            => [
   ],
 ];
