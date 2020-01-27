@@ -148,7 +148,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasMany(ServiceApplication::class, 'receiver_id');
   }
 
-  public function sent_applications(){
+  public function applications(){
     return $this->hasMany(ServiceApplication::class);
   }
 
