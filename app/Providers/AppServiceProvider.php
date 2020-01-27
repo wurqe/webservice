@@ -16,6 +16,8 @@ use App\Observers\InvitationObserver;
 use App\Invitation;
 use App\Observers\WorkObserver;
 use App\Work;
+use App\Observers\ServiceApplicationObserver;
+use App\ServiceApplication;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
     {
       Invitation::observe(InvitationObserver::class);
       Work::observe(WorkObserver::class);
+      ServiceApplication::observe(ServiceApplicationObserver::class);
 
       Validator::extend('imageable', function ($attribute, $value, $params, $validator) {
         if (!$value) return true;

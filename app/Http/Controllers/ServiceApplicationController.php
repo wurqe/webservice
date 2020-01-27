@@ -26,7 +26,7 @@ class ServiceApplicationController extends Controller
       $type           = $request->type ?? 'received';
 
       if ($type == 'sent') {
-        $applications = $user->sent_applications();
+        $applications = $user->applications();
       } else {
         $applications = $user->received_applications();
       }

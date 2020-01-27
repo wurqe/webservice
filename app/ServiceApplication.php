@@ -12,7 +12,11 @@ class ServiceApplication extends Model
     return $this->belongsTo(Service::class);
   }
 
+  public function receiver(){
+    return $this->belongsTo(User::class, 'receiver_id');
+  }
+
   public function applicant(){
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'user_id');
   }
 }
