@@ -12,9 +12,17 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $user       = $request->user();
+      $search         = $request->search;
+      $pageSize   = $request->pageSize;
+
+      $notifications = $user->notifications();
+
+      if($search) $notifications->orWhere('data->title', 'LIKE', '%'.$search.'%')->orWhere('data->message', 'LIKE', '%'.$search.'%');
+
+      return $notifications->paginate($pageSize);
     }
 
     /**
