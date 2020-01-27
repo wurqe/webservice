@@ -58,15 +58,12 @@ class NewInvitation extends Notification
     public function toDatabase($notifiable)
     {
         return [
-          'title' => $this->invitation->service->title,
-          'data' => [
-            'invitation_id'   => $this->invitation->id,
-            'service_id'      => $this->invitation->service_id,
-            'receiver_id'     => $this->invitation->receiver_id,
-            'user_id'         => $this->invitation->user_id,
-            'message'         => trans('notify.invitation.new.title'),
-            'title'           => trans('notify.invitation.new.message', ['name' => "{$this->user->firstname} {$this->user->lastname}"]),
-          ],
+          'invitation_id'   => $this->invitation->id,
+          'service_id'      => $this->invitation->service_id,
+          'receiver_id'     => $this->invitation->receiver_id,
+          'user_id'         => $this->invitation->user_id,
+          'message'         => trans('notify.invitation.new.title'),
+          'title'           => trans('notify.invitation.new.message', ['name' => "{$this->user->firstname} {$this->user->lastname}", 'title' => $this->invitation->service->title]),
         ];
     }
 }

@@ -52,6 +52,7 @@ Route::group(['middleware' => 'localization'], function(){
       'settings'          => 'SettingController',
       'categories'        => 'CategoryController',
       'invitations'       => 'InvitationController',
+      'notifications'     => 'NotificationController',
       'applications'      => 'ServiceApplicationController',
       'notifications'     => 'NotificationController',
       'jobs'              => 'WorkController',

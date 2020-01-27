@@ -6,7 +6,7 @@ return [
   'invitation'        => [
     'new'             => [
       'title'         => 'New invitation',
-      'message'       => 'You have New Service Invitation from :name'
+      'message'       => 'You have New Service Invitation from :name on :title'
     ],
   ],
   'application'       => [
