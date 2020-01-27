@@ -28,7 +28,11 @@ class ServiceApplicationObserver
      */
     public function updated(ServiceApplication $serviceApplication)
     {
-        //
+      if($serviceApplication->isDirty('status')){
+        $action = $serviceApplication->status;
+        $user = $action == 'canceled' ? $serviceApplication->receiver : $serviceApplication->applicant;
+        $user->notify(new ApplicationUpdate($serviceApplication, $user, $action));
+      }
     }
 
     /**

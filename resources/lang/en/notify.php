@@ -15,6 +15,10 @@ return [
   ],
   'application'       => [
     'new'             => ['title' => 'New Service Application', 'message' => 'new service application from :name'],
+    'update'          => [
+      'title'         => 'Application Attempt',
+      'message'       => 'Application :action by :name on :title'
+    ],
   ],
   'service'           => [
     'hired'           => ['title' => 'You are hired', 'message' => 'You have been hired by :name on :title'],
