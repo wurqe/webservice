@@ -7,20 +7,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WorkStart extends Notification
+class NewReview extends Notification
 {
     use Queueable;
-    private $title, $work;
+    private $review, $title, $name, $service_id, $invitation_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($work, $title)
+    public function __construct($review, $work, $user, $invitation)
     {
-      $this->work   = $work;
-      $this->title  = $title;
+      $this->review         = $review;
+      $this->service_id     = $work->service_id;
+      $this->invitation_id  = $work->invitation_id;
+      $this->name           = "{$user->firstname} {$user->lastname}";
+      $this->title          = $invitation->service->title;
     }
 
     /**
@@ -56,14 +59,19 @@ class WorkStart extends Notification
      */
     public function toDatabase($notifiable)
     {
-      list('id' => $id, 'invitation_id' => $invitation_id, 'service_id' => $service_id) = $this->work;
+      list('id'      => $id,
+        'rating'     => $rating,
+        'author_id'  => $user_id
+      ) = $this->review;
+
       return [
-        'type'            => 'work_started',
-        'work_id'         => $id,
-        'invitation_id'   => $invitation_id,
-        'service_id'      => $service_id,
-        'title'           => trans('notify.work.started.title'),
-        'message'         => trans('notify.work.started.message', ['title' => $this->title]),
+        'type'            => 'new_review',
+        'review_id'       => $id,
+        'invitation_id'   => $this->invitation_id,
+        'user_id'         => $user_id,
+        'service_id'      => $this->service_id,
+        'title'           => trans('notify.work.new_review.title',   ['name' => $this->name]),
+        'message'         => trans('notify.work.new_review.message', ['title' => $this->title, 'name' => $this->name, 'rating' => $rating]),
       ];
     }
 }
