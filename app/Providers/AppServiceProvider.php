@@ -14,6 +14,8 @@ use Intervention\Image\Facades\Image;
 
 use App\Observers\InvitationObserver;
 use App\Invitation;
+use App\Observers\WorkObserver;
+use App\Work;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
       Invitation::observe(InvitationObserver::class);
+      Work::observe(WorkObserver::class);
 
       Validator::extend('imageable', function ($attribute, $value, $params, $validator) {
         if (!$value) return true;
