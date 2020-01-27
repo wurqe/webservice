@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Invitation;
 use App\Notifications\Invitation\NewInvitation;
+use App\Notifications\Invitation\InvitationUpdate;
 
 class InvitationObserver
 {
@@ -15,7 +16,7 @@ class InvitationObserver
      */
     public function created(Invitation $invitation)
     {
-      $user = $invitation->user;
+      $user = $invitation->receiver;
       $user->notify(new NewInvitation($invitation));
     }
 
@@ -27,7 +28,12 @@ class InvitationObserver
      */
     public function updated(Invitation $invitation)
     {
-        //
+      // $invitation->getDirty();
+      if($invitation->isDirty('status')){
+        $action = $invitation->status;
+        $user = $action == 'canceled' ? $invitation->receiver : $invitation->user;
+        $user->notify(new InvitationUpdate($invitation, $action));
+      }
     }
 
     /**

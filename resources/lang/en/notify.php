@@ -8,6 +8,10 @@ return [
       'title'         => 'New invitation',
       'message'       => 'You have New Service Invitation from :name on :title'
     ],
+    'update'          => [
+      'title'         => 'Invitation Attempt',
+      'message'       => 'Invitation :action by :name on :title'
+    ],
   ],
   'application'       => [
   ],
