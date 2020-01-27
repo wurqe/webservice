@@ -139,4 +139,9 @@ class TestController extends Controller
     {
         //
     }
+    
+    public function countUsers()
+    {
+      return ['count' => \App\User::count()];
+    }
 }
