@@ -32,7 +32,10 @@ class InvitationObserver
       if($invitation->isDirty('status')){
         $action = $invitation->status;
         $user = $action == 'canceled' ? $invitation->receiver : $invitation->user;
-        $user->notify(new InvitationUpdate($invitation, $action));
+        $user->notify(new InvitationUpdate($invitation, $user, $action));
+      } else if($invitation->isDirty('hired') && $invitation->hired){
+        $user = $invitation->receiver;
+        $user->notify(new InvitationUpdate($invitation, $user, 'hired'));
       }
     }
 

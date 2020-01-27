@@ -17,11 +17,11 @@ class InvitationUpdate extends Notification
      *
      * @return void
      */
-    public function __construct($invitation, string $action)
+    public function __construct($invitation, $user, string $action)
     {
       $this->invitation = $invitation;
-      $this->user       = $invitation->user;
-      $this->name       = "{$this->user->firstname} {$this->user->lastname}";
+      $this->user       = $user;
+      $this->name       = "{$user->firstname} {$user->lastname}";
       $this->action     = $action;
       $this->title      = $invitation->service->title;
     }
@@ -59,13 +59,15 @@ class InvitationUpdate extends Notification
      */
     public function toDatabase($notifiable)
     {
+      $action = $this->action;
+      list('id' => $id, 'service_id' => $service_id, 'receiver_id' => $receiver_id, 'user_id' => $user_id) = $this->invitation;
       return [
-        'invitation_id'   => $this->invitation->id,
-        'service_id'      => $this->invitation->service_id,
-        'receiver_id'     => $this->invitation->receiver_id,
-        'user_id'         => $this->invitation->user_id,
-        'title'           => trans('notify.invitation.update.title'),
-        'message'         => trans('notify.invitation.update.message', ['name' => $this->name, 'action' => $this->action, 'title' => $this->title]),
-        ];
+        'invitation_id'   => $id,
+        'service_id'      => $service_id,
+        'receiver_id'     => $receiver_id,
+        'user_id'         => $user_id,
+        'title'           => $action == 'hired' ? trans('notify.service.hired.title') : trans('notify.invitation.update.title'),
+        'message'         => $action == 'hired' ? trans('notify.service.hired.message', ['name' => $this->name, 'title' => $this->title]) : trans('notify.invitation.update.message', ['name' => $this->name, 'action' => $action, 'title' => $this->title]),
+      ];
     }
 }

@@ -16,6 +16,7 @@ return [
   'application'       => [
   ],
   'service'           => [
+    'hired'           => ['title' => 'You are hired', 'message' => 'You have been hired by :name on :title'],
   ],
   'work'              => [
   ],
