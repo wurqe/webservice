@@ -11,7 +11,7 @@ class NewInvitation extends Notification
 {
     use Queueable;
 
-    private $invitation;
+    private $invitation, $user;
 
     /**
      * Create a new notification instance.
@@ -21,7 +21,7 @@ class NewInvitation extends Notification
     public function __construct($invitation)
     {
       $this->invitation = $invitation;
-      // $this->service = $invitation->service;
+      $this->user = $invitation->user;
     }
 
     /**
@@ -44,7 +44,7 @@ class NewInvitation extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
+                    ->line(trans('notify.new.title'))
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
     }
@@ -55,10 +55,18 @@ class NewInvitation extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toDatabase($notifiable)
     {
         return [
-          'title' => $this->invitation->service->title
+          'title' => $this->invitation->service->title,
+          'data' => [
+            'invitation_id'   => $this->invitation->id,
+            'service_id'      => $this->invitation->service_id,
+            'receiver_id'     => $this->invitation->receiver_id,
+            'user_id'         => $this->invitation->user_id,
+            'message'         => trans('notify.invitation.new.title'),
+            'title'           => trans('notify.invitation.new.message', ['name' => "{$this->user->firstname} {$this->user->lastname}"]),
+          ],
         ];
     }
 }

@@ -7,6 +7,6 @@ use Illuminate\Notifications\DatabaseNotification;
 
 class Notification extends DatabaseNotification
 {
-  protected $fillable = [''];
+  protected $fillable = ['data', 'read_at', 'type'];
 
 }
