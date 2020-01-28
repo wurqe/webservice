@@ -24,6 +24,7 @@ use App\Interfaces\Edit\CanEdit;
 use App\Traits\Bid\HasBid;
 use App\Notifications\Work\NewReview;
 use App\Notifications\Wallet\WalletUpdate;
+use App\Collections\UserCollection;
 
 class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxable, CanEdit, CanModerate
 {
@@ -172,6 +173,11 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
       $this->addMediaConversion('thumb')
       ->width(100)->height(100);
     });
+  }
+
+  public function newCollection(array $users = [])
+  {
+    return new UserCollection($users);
   }
 
   // public function works(){

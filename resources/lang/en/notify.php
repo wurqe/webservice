@@ -34,6 +34,13 @@ return [
       'received'      => ['title' => 'Payment Received', 'message' => 'you :action :currency:amount from :name'],
     ]
   ],
+  'bid'               => [
+    'new'             => ['title' => 'New Bid With :model', 'message' => ':name made a new bid from the :model'],
+    'update'          => ['title' => 'Bid With :model :action', 'message' => ':name has :action the bid from the :model'],
+    // [
+    //   'cancel'        => ,
+    // ],
+  ],
   'payment'           => [
   ],
   'review'            => [
