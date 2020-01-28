@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Edit;
 use App\Notifications\Bid\NewBid;
+use App\Notifications\Bid\BidUpdate;
 
 class BidObserver
 {
@@ -27,7 +28,13 @@ class BidObserver
      */
     public function updated(Edit $edit)
     {
-        //
+      if($edit->isDirty('status')){
+        $action = $edit->status;
+        $user = $action == 'canceled' ? $edit->moderator : $edit->editor;
+        $actor = $action == 'canceled' ? $edit->editor : $edit->moderator;
+        $name = "{$actor->firstname} {$actor->lastname}";
+        $user->notify(new BidUpdate($edit, $name, $action));
+      }
     }
 
     /**
