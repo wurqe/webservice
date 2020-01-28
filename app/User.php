@@ -161,10 +161,6 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->morphMany(Meta::class, 'metable');
   }
 
-  public function notifications(){
-    return $this->morphMany(Notification::class, 'notifiable')->latest();
-  }
-
   public function registerMediaCollections(Media $media = null){
     $this->addMediaCollection('avatar')
     ->useDisk('user_avatars')
