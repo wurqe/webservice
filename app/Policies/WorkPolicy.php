@@ -31,7 +31,7 @@ class WorkPolicy
      */
     public function view(User $user, Work $work)
     {
-        //
+      return $work->invitation->user_id == $user->id || $work->invitation->receiver_id == $user->id;
     }
 
     /**

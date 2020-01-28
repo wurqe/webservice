@@ -61,9 +61,12 @@ class WorkController extends Controller
      * @param  \App\Work  $work
      * @return \Illuminate\Http\Response
      */
-    public function show(Work $work)
+    public function show(Work $job)
     {
-        //
+      $this->authorize('view', $job);
+      $job->load(['service', 'invitation']);
+      $job->loadEarnedPrice();
+      return $job;
     }
 
     /**
