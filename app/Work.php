@@ -63,6 +63,11 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
       return true;
   }
 
+  public function loadEarnedPrice()
+  {
+    $this->earning = $this->calculateAmount();
+  }
+
   public function getAmountProduct(Customer $customer = null): int
   {
     return $this->acceptedBidAmount() ?? $this->amount ?? 0;
@@ -70,11 +75,24 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
 
   public function calculateAmount($invitation = null)
   {
-    // $acceptedBid  = $invitation ? $invitation->acceptedBid() : 0;
     $amount       = $this->getAmountProduct();
-    $per          = $amount * (1 / 100);
-    $per_amount   = $amount - $per;
-    return $per_amount;
+    if ($this->isHourlyPrice()) {
+      $work_start     = new \DateTime($this->created_at);
+      $work_completed = new \DateTime($this->completed_at);
+      $diff           = $work_start->diff($work_completed);
+      $mins           = $diff->s;
+      $hrs            = $diff->f;
+      $floated        = (float)"$hrs.$mins";
+      $earned         = $floated * $amount;
+    } else {
+      $per            = $amount * (1 / 100);
+      $earned         = $amount - $per;
+    }
+    return $earned;
+  }
+
+  public function isHourlyPrice(){
+    return $this->service->payment_type == 'hourly';
   }
 
   public function getFeePercent() : float
