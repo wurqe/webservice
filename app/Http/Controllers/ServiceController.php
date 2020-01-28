@@ -22,6 +22,7 @@ class ServiceController extends Controller
         'type'          => ['regex:(seek|provide)'],
         'search'        => '',
         'orderBy'       => ['regex:(title)'],
+        'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'numeric',
       ]);
 
@@ -30,13 +31,16 @@ class ServiceController extends Controller
       $search         = $request->search;
       $orderBy        = $request->orderBy;
       $pageSize       = $request->pageSize;
+      $order          = $request->order ?? 'asc';
       $type           = $request->type ?? 'seek';
 
-      $services = Service::where('user_id', '!=', $user_id)->where('type', $type)->with('skills');
+      $services = Service::where('user_id', '!=', $user_id)->with(['skills', 'category:id,name']);
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
+      else $services->where('type', $type);
 
-      return $services->paginate($pageSize);
+       $services = $services->orderBy($orderBy, $order)->paginate($pageSize);
+       return $services->map(function($s){return $s->withImageUrl(null, 'attachments', true);});
     }
 
     /**

@@ -13,6 +13,7 @@ use App\Traits\HasMeta;
 use App\Traits\HasImage;
 use App\Traits\Edit\HasEdit;
 use App\Interfaces\Edit\Editable;
+use App\Collections\ServiceCollection;
 
 class Service extends Model implements HasMedia, Editable
 {
@@ -20,7 +21,7 @@ class Service extends Model implements HasMedia, Editable
 
   protected $fillable   = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
 
-  protected $hidden     = ['pivot'];
+  protected $hidden     = ['pivot', 'media'];
   protected $mediaNames = ['attachment' => 'attachments'];
 
   public function calculateAmount()
@@ -65,6 +66,11 @@ class Service extends Model implements HasMedia, Editable
 
   public function work(){
     return $this->hasOne(Work::class);
+  }
+
+  public function newCollection(array $services = [])
+  {
+    return new ServiceCollection($services);
   }
 
   public function registerMediaCollections(Media $media = null){

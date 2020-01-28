@@ -30,6 +30,7 @@ trait HasImage
       }
       if ($images) $this->$collection = $images;
     }
+    // dd($this);
     return $this;
   }
 
