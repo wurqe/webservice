@@ -15,8 +15,8 @@ class TestController extends Controller
     public function index(Request $request)
     {
       $user = $request->user();
-      $invitation = $user->invitations()->findOrFail(10);
-      $service = $user->services()->first();
+      // $invitation = $user->invitations()->findOrFail(10);
+      // $service = $user->services()->first();
       // return $user->edit($service, ['amount' => 500], 'price', $user);
       // return $service->edits;
       // return $user->moderate($service->edits()->first(), 'accepted');
@@ -24,7 +24,19 @@ class TestController extends Controller
       // return $user->edited;
       // return $service->edited;
       // return [$user->hasPendingEditFor($invitation)];
-      return [$invitation->otherBider($user)];
+      // return [$invitation->otherBider($user)];
+      $service = \App\Service::find(4);
+      $work = \App\Work::find(10);
+      $amount = $work->amount;
+      $work_start = new \DateTime($work->created_at);
+      $work_completed = new \DateTime($work->completed_at);
+      $diff = $work_start->diff($work_completed);
+      $mins = $diff->s;
+      $hrs = $diff->f;
+      $floated = (float)"$hrs.$mins";
+      $earned = $floated * $amount;
+      return [$work->calculateAmount()];
+      return [$diff, $floated, $amount, $earned];
     }
 
     public function reset()
@@ -139,7 +151,7 @@ class TestController extends Controller
     {
         //
     }
-    
+
     public function countUsers()
     {
       return ['count' => \App\User::count()];
