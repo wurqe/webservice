@@ -102,7 +102,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function registerMediaCollections(Media $media = null){
     $this->addMediaCollection('avatar')
-    ->useDisk('user_avatars')
+    ->useDisk('user_avatars')->singleFile()
     ->acceptsMimeTypes(['image/jpeg', 'image/png'])
     ->registerMediaConversions(function(Media $media = null){
       $this->addMediaConversion('thumb')

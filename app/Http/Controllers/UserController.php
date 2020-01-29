@@ -25,34 +25,36 @@ class UserController extends Controller
   public function Kycdocs(Request $request){
   $validate = Validator::make($request->all(),[
       "photo" => 'required|image|mimes:jpeg,png'
-      ]);  
+      ]);
   if($validate->fails()):
   return json_encode(["message"=>"file is bigger than 1mb or incorrect format, must be jpeg."]);
   endif;
   $user = User::find($request->id);
   if($user):
   $file = $request->file('photo');
-  if($file):         
+  if($file):
   $FileName = str_replace(' ', '',time().'_'.$file->getClientOriginalName());
   $path = $request->file('photo')->storeAs('KYCDOCS', $FileName);
   $oldkycdocs = $user->metas()->where('name','kycdocs')->first();
-  Storage::delete("KYCDOCS/".$oldkycdocs->value); 
+  Storage::delete("KYCDOCS/".$oldkycdocs->value);
   $save = $user->addMeta(["name" => "kycdocs"],["value" => $FileName]);
   return json_encode(['message'=>"success"]);
   endif;
 endif;
        //$path = $user->saveImage($file,'ProfilePics');
-       /*$photoUrl = url('/storage/ProfilePics',$FileName);*/     
+       /*$photoUrl = url('/storage/ProfilePics',$FileName);*/
   }
 
-   public function UserProfileUpdate(Request $request){
-    $user = User::find($request->id);
-        if($user):
-      $get_and_saveimage = $user->saveImage($request->photo,"avatar");
-      return $get_and_saveimage;
-      endif;
+  public function UserProfileUpdate(Request $request)
+  {
+    $request->validate([
+      'photo' => 'imageable'
+    ]);
 
-    }
+    $user = $request->user();
+    return $user->saveImage($request->photo, "avatar");
+  }
+
     /**
      * Display a listing of the resource.
      *
@@ -92,7 +94,7 @@ endif;
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
-    { 
+    {
 
     }
 

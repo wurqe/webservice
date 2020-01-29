@@ -34,12 +34,11 @@ Route::group(['middleware' => 'localization'], function(){
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     // resources
-    Route::put('userprofileupdate', 'UserController@UserProfileUpdate');
-  Route::post('kycdocs', 'UserController@Kycdocs');
+    Route::post('users/avatar/upload', 'UserController@UserProfileUpdate');
+    Route::post('kycdocs', 'UserController@Kycdocs');
     Route::apiResources([
       'users'             => 'UserController',
       'settings'          => 'SettingController',
-      'interests'         => 'InterestController',
       'categories'        => 'CategoryController',
       'invitations'       => 'InvitationController',
       'notifications'     => 'NotificationController',
