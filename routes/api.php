@@ -27,9 +27,9 @@ Route::group(['middleware' => 'localization'], function(){
   // test resource
   // Route::resource('tests', 'TestController');
   // guest routes
-  Route::group(['middleware' => ['guest']], function(){
+  // Route::group(['middleware' => ['guest']], function(){
     Route::get('services', 'ServiceController@index');
-  });
+  // });
   // auth endpoints
   Route::group(['middleware' => ['auth:api']], function(){
     Route::resource('services', 'ServiceController')->except(['index']);

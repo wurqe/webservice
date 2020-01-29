@@ -15,6 +15,7 @@ class Controller extends BaseController
       $request->validate(array_merge([
         'search'        => 'nullable',
         'orderBy'       => ['nullable|string'],
+        'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'nullable|int',
       ], $customs));
     }

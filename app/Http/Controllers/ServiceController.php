@@ -22,21 +22,37 @@ class ServiceController extends Controller
         'type'          => ['regex:(seek|provide)'],
         'search'        => '',
         'orderBy'       => ['regex:(title)'],
+        'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'numeric',
       ]);
 
-      $user           = $request->user();
+      $user           = $request->user('api');
       $user_id        = $user ? $user->id : 0;
       $search         = $request->search;
-      $orderBy        = $request->orderBy;
+      $orderBy        = $request->orderBy ?? 'id';
       $pageSize       = $request->pageSize;
+      $order          = $request->order ?? 'asc';
       $type           = $request->type ?? 'seek';
 
-      $services = Service::where('user_id', '!=', $user_id)->where('type', $type)->with('skills');
+      $services = Service::where('user_id', '!=', $user_id)->with(['skills', 'category:id,name']);
 
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
+      else $services->where('type', $type);
 
-      return $services->paginate($pageSize);
+       $services = $services->distance($user)->ARating()->orderBy($orderBy, $order)->paginate($pageSize);
+       return $services->map(function($s) use(&$i){
+         $i = 1;
+         if ($s->type == 'provide') {
+           $s->works()->get()->map(function($w) use($s, &$i){
+             $s->avgRating = ($s->avgRating + $w->averageRating()->first()) / $i;
+             $s->ratingCount = $i;
+             $i++;
+           });
+           $s->withImageUrl(null, 'attachments', true);
+         }
+
+         return $s;
+       });
     }
 
     /**

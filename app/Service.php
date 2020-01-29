@@ -13,6 +13,8 @@ use App\Traits\HasMeta;
 use App\Traits\HasImage;
 use App\Traits\Edit\HasEdit;
 use App\Interfaces\Edit\Editable;
+use App\Collections\ServiceCollection;
+use Codebyray\ReviewRateable\Models\Rating;
 
 class Service extends Model implements HasMedia, Editable
 {
@@ -20,8 +22,46 @@ class Service extends Model implements HasMedia, Editable
 
   protected $fillable   = ['type', 'tags', 'title', 'description', 'amount', 'payment_type', 'negotiable', 'terms', 'user_id', 'category_id'];
 
-  protected $hidden     = ['pivot'];
+  protected $hidden     = ['pivot', 'media'];
   protected $mediaNames = ['attachment' => 'attachments'];
+
+  public static function scopeDistance($query, $user = null){
+    if ($user) {
+      $latitude   = $user->lat;
+      $longitude  = $user->lng;
+      $latName    = 'lat';
+      $lonName    = 'lng';
+      $calc       = 1.1515 * 1.609344;
+
+      $sql = "((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc) as distance";
+      $query->with(['user' => function($q) use($sql){
+        $q->selectRaw("id,".$sql);
+      }]);
+      return $query;
+    }
+  }
+
+  public function scopeARating($query)
+  {
+    // $query->with('avgRating');
+    // $query->with(['works'])->whereHas('works', function($q){
+    //   $q->where('type', 'provide')
+    //   ->selectRaw("AVG(works.rating) as avs");
+    //   // ->with('ratings');
+    // });
+  }
+
+  public function withAvgRating()
+  {
+    return $this->load(['ratings']);// => function($q){
+      // $q->selectRaw('AVG(rating) as averageReviewRateable');
+    // }]);
+  }
+
+  // public function avgRating()
+  // {
+  //   return $this->ratings();//->selectRaw('avg(rating) as avgs');
+  // }
 
   public function calculateAmount()
   {
@@ -65,6 +105,20 @@ class Service extends Model implements HasMedia, Editable
 
   public function work(){
     return $this->hasOne(Work::class);
+  }
+
+  public function works(){
+    return $this->hasMany(Work::class);
+  }
+
+  // public function ratings(){
+  //   return $this->hasManyThrough(Rating::class, Work::class, 'id', 'reviewrateable_id')->where('reviewrateable_type', Work::class);
+  //   // return $this->hasManyThrough(Work::class, Rating::class, 'reviewrateable');
+  // }
+
+  public function newCollection(array $services = [])
+  {
+    return new ServiceCollection($services);
   }
 
   public function registerMediaCollections(Media $media = null){
