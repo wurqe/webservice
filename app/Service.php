@@ -24,6 +24,22 @@ class Service extends Model implements HasMedia, Editable
   protected $hidden     = ['pivot', 'media'];
   protected $mediaNames = ['attachment' => 'attachments'];
 
+  public static function scopeDistance($query, $user = null){
+    if ($user) {
+      $latitude   = $user->lat;
+      $longitude  = $user->lng;
+      $latName    = 'lat';
+      $lonName    = 'lng';
+      $calc       = 1.1515 * 1.609344;
+
+      $sql = "((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc) as distance";
+      $query->with(['user' => function($q) use($sql){
+        $q->selectRaw("id,".$sql);
+      }]);
+      return $query;
+    }
+  }
+
   public function calculateAmount()
   {
     $amount       = $this->amount;

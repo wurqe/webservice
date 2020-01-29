@@ -26,7 +26,7 @@ class ServiceController extends Controller
         'pageSize'      => 'numeric',
       ]);
 
-      $user           = $request->user();
+      $user           = $request->user('api');
       $user_id        = $user ? $user->id : 0;
       $search         = $request->search;
       $orderBy        = $request->orderBy;
@@ -39,7 +39,7 @@ class ServiceController extends Controller
       if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
       else $services->where('type', $type);
 
-       $services = $services->orderBy($orderBy, $order)->paginate($pageSize);
+       $services = $services->distance($user)->orderBy($orderBy, $order)->paginate($pageSize);
        return $services->map(function($s){return $s->withImageUrl(null, 'attachments', true);});
     }
 
