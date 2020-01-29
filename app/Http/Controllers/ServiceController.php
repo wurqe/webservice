@@ -45,6 +45,7 @@ class ServiceController extends Controller
          if ($s->type == 'provide') {
            $s->works()->get()->map(function($w) use($s, &$i){
              $s->avgRating = ($s->avgRating + $w->averageRating()->first()) / $i;
+             $s->ratingCount = $i;
              $i++;
            });
            $s->withImageUrl(null, 'attachments', true);
