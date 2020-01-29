@@ -47,6 +47,8 @@ Route::group(['middleware' => 'localization'], function(){
     Route::get('users/wallet/details',  'UserController@wallet');
     Route::put('bids',  'BidController@attemptBid');
     // resources
+    Route::put('userprofileupdate', 'UserController@UserProfileUpdate');
+  Route::post('kycdocs', 'UserController@Kycdocs');
     Route::apiResources([
       'users'             => 'UserController',
       'settings'          => 'SettingController',
