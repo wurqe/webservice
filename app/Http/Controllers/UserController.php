@@ -48,16 +48,9 @@ endif;
    public function UserProfileUpdate(Request $request){
     $user = User::find($request->id);
         if($user):
-      $get_and_saveimage = $user->saveImage($request->photo,"profilepics");
-      return $get_and_saveimage;  
-        
-
-
-
-
-
-
-        endif;
+      $get_and_saveimage = $user->saveImage($request->photo,"avatar");
+      return $get_and_saveimage;
+      endif;
 
     }
     /**

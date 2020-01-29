@@ -108,6 +108,13 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
       $this->addMediaConversion('thumb')
       ->width(100)->height(100);
     });
+
+    /*$this->addMediaCollection('profilepics')->acceptsMimeTypes(['image/jpeg', 'image/png'])
+    ->registerMediaConversions(function(Media $media = null){
+      $this->addMediaConversion('thumb')
+      ->width(100)->height(100);
+    });*/
+
   }
 
   // public function works(){
