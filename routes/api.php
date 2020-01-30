@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => 'localization'], function(){
+Route::group(['middleware' => ['localization', 'cors']], function(){
   // Route::get('payment/callback/{code}', 'PaymentController@callback');
   Route::get('payments/pay/init', 'PaymentController@Astore');
   Route::get('payments/verify/{trxref}', 'PaymentController@Averify');
