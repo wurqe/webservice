@@ -24,6 +24,7 @@ class Service extends Model implements HasMedia, Editable
 
   protected $hidden     = ['pivot', 'media'];
   protected $mediaNames = ['attachment' => 'attachments'];
+  protected $casts      = ['negotiable' => 'boolean', 'amount' => 'float'];
 
   public static function scopeDistance($query, $user = null){
     if ($user) {
