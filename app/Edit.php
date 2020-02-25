@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Edit extends Model
 {
   protected $fillable = ['editing_type', 'editor_id', 'editor_id', 'editor_type', 'moderator_id', 'moderator_type', 'name', 'changes', 'status'];
-  protected $casts = ['changes' => 'array'];
+  protected $casts = ['changes' => 'array', 'editor_id' => 'int', 'moderator_id' => 'int'];
 
   // private function accept(){
   //   $this->update(['status' => 'accepted']);
