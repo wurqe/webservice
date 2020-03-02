@@ -49,8 +49,8 @@ class RegisterController extends Controller
       $request->validate([
         'email'       => 'bail|email|unique:users|max:60',
         'name'        => 'unique:users|max:100|min:3',
-        'firstname'   => 'required|max:29|min:3',
-        'lastname'    => 'required|max:29|min:3',
+        'firstname'   => 'max:29|min:3',
+        'lastname'    => 'max:29|min:3',
         'password'    => 'required',
         'lat'         => [new Latitude],
         'lng'         => [new Longitude],

@@ -126,7 +126,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function received_invitations(){
-    return $this->hasMany(Invitation::class, 'receiver');
+    return $this->hasMany(Invitation::class, 'receiver_id');
   }
 
   public function pending_invitations(){

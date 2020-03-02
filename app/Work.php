@@ -18,6 +18,7 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
 {
   use ReviewRateableTrait, HasWallet, HasEdit, HasBid;
   protected $fillable = ['status', 'invitation_id', 'service_id', 'completed_at', 'amount', 'amount_currency'];
+  protected $casts = ['invitation_id' => 'int', 'service_id' => 'int'];
 
   public function afterBid($bid_action)
   {

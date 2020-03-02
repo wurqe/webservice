@@ -11,7 +11,7 @@ class Invitation extends Model implements Editable
 {
   use HasEdit, HasBid;
   protected $fillable = ['hired', "user_id", "receiver_id", "service_id", "comment", 'status'];
-  // protected $hidden = ['edits'];
+  protected $casts = ['user_id' => 'int', 'receiver_id' => 'int', 'service_id' => 'int'];
 
   public function isWorkStarted() {
     return $this->work;

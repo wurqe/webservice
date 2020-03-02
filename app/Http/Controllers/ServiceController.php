@@ -102,7 +102,7 @@ class ServiceController extends Controller
         'negotiable'      => $request->negotiable,
         'amount'          => $request->amount,
         'terms'           => $request->terms,
-        'tags'            => $request->skills,
+        'tags'            => $request->skills ?? [],
       ]);
 
       // save meta

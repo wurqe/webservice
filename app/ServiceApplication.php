@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceApplication extends Model
 {
   protected $fillable = ['service_id', 'receiver_id', 'user_id', 'comment', 'status'];
+  protected $casts = ['user_id' => 'int', 'receiver_id' => 'int', 'service_id' => 'int'];
 
   public function service(){
     return $this->belongsTo(Service::class);
