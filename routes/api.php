@@ -40,11 +40,14 @@ Route::group(['middleware' => ['localization']], function(){
     Route::put('jobs/complete/{work}',  'WorkController@complete');
     Route::post('jobs/rate/{work}',     'WorkController@rate');
     Route::post('jobs/{work}/pay',      'WorkController@pay');
+
     Route::get('users/wallet/balance',  'UserController@balance');
+    Route::get('users/wallet/details',  'UserController@wallet');
+    Route::get('logout', 'Auth\LoginController@logout');
+
     Route::get('transactions',          'PaymentController@transactionHistory');
     Route::post('payments/verify',      'PaymentController@verify');
     Route::get('payments/options',      'PaymentController@options');
-    Route::get('users/wallet/details',  'UserController@wallet');
     Route::put('bids',  'BidController@attemptBid');
     // resources
     Route::put('userprofileupdate', 'UserController@UserProfileUpdate');
