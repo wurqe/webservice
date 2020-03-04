@@ -207,14 +207,14 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   public function withRating(){
     $ratings        = $this->reviews()->selectRaw('rating');
     $quantity       = $ratings->count();
-    $total    = $ratings->sum('rating');
-    $this->rating = $this->avgRating($total, $quantity);
+    $total          = $ratings->sum('rating');
+    $this->rating   = $this->avgRating($total, $quantity);
     return $this;
   }
 
   public function avgRating($total, $quantity, $max = 5)
   {
-    return $total/$quantity;
+    return $total ? $total/$quantity : 0;
   }
 
   public function metas(){

@@ -64,6 +64,26 @@ class Service extends Model implements HasMedia, Editable
   //   return $this->ratings();//->selectRaw('avg(rating) as avgs');
   // }
 
+  public function reviews()
+  {
+    $jobs           = $this->works()->pluck('works.id');
+    return \Codebyray\ReviewRateable\Models\Rating::where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+  }
+
+  public function withRating(){
+    $ratings            = $this->reviews()->selectRaw('rating');
+    $quantity           = $ratings->count();
+    $total              = $ratings->sum('rating');
+    $this->avgRating    = $this->calcAvgRating($total, $quantity);
+    $this->ratingCount  = $quantity;
+    return $this;
+  }
+
+  public function calcAvgRating($total, $quantity, $max = 5)
+  {
+    return $total ? $total/$quantity : 0;
+  }
+
   public function calculateAmount()
   {
     $amount       = $this->amount;

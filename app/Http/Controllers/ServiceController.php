@@ -40,19 +40,10 @@ class ServiceController extends Controller
       else $services->where('type', $type);
 
        $services = $services->distance($user)->ARating()->orderBy($orderBy, $order)->paginate($pageSize);
-       return $services->map(function($s) use(&$i){
-         $i = 1;
-         if ($s->type == 'provide') {
-           $s->works()->get()->map(function($w) use($s, &$i){
-             $s->avgRating = ($s->avgRating + $w->averageRating()->first()) / $i;
-             $s->ratingCount = $i;
-             $i++;
-           });
-           $s->withImageUrl(null, 'attachments', true);
-         }
-
-         return $s;
-       });
+       foreach($services->items() as $s){
+         $s->withImageUrl(null, 'attachments', true)->withRating();
+       }
+       return $services;
     }
 
     /**

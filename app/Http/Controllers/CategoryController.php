@@ -32,14 +32,10 @@ class CategoryController extends Controller
       });
 
       $categories = $categories->orderBy($orderBy, $order)->paginate($pageSize);
-      // dd($categories);
       foreach ($categories->items() as $cat) {
         $cat->withImageUrl(null, 'avatar');
       }
       return $categories;
-      return $categories->map(function($cat){
-        return $cat->withImageUrl(null, 'avatar');
-      });
     }
 
     /**
