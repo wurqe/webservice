@@ -44,6 +44,7 @@ Route::group(['middleware' => ['localization']], function(){
     Route::get('users/wallet/balance',        'UserController@balance');
     Route::get('users/wallet/details',        'UserController@wallet');
     Route::get('users/jobs',                  'UserController@jobs');
+    Route::get('users/services/stats',        'UserController@serviceStats');
     Route::get('logout',                      'Auth\LoginController@logout');
 
     Route::get('transactions',                'PaymentController@transactionHistory');

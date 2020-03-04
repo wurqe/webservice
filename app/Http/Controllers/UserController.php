@@ -12,7 +12,8 @@ class UserController extends Controller
 
   public function serviceStats(Request $request)
   {
-
+    $user           = $request->user();
+    return ['completionRate' => $user->jobsCompletionRate(), 'responseRate' => $user->InvitationsResponseRate(), 'compliantRate' => $user->CompliantRate()];
   }
 
   public function jobs(Request $request)

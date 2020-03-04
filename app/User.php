@@ -163,7 +163,36 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function jobsCompleted()
   {
+    return $this->jobs()->where('works.status', 'completed');
+  }
 
+  public function jobsCompletionRate()
+  {
+    $jobs           = $this->jobs();
+    $total          = $jobs->count();
+    $totalCompleted = $jobs->where('works.status', 'completed')->count();
+    return $this->percentage($totalCompleted, $total);
+  }
+
+  public function InvitationsResponseRate()
+  {
+    $invitations    = $this->received_invitations();
+    $total          = $invitations->count();
+    $Attempted      = $invitations->where('status', '!=', 'pending')->count();
+    return $this->percentage($Attempted, $total);
+  }
+
+  public function CompliantRate()
+  {
+    $jobs           = $this->jobs()->pluck('works.id');//->whereHas('ratings')->with('ratings');
+    $ratings        = \Codebyray\ReviewRateable\Models\Rating::selectRaw('rating')->where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+    $total          = $ratings->count();
+    $minRating      = $ratings->where('rating', '<', '3')->count();
+    return $this->percentage($minRating, $total);
+  }
+
+  public function percentage($count, $total){
+    return (int)(($count/$total) * 100);
   }
 
   public function metas(){
