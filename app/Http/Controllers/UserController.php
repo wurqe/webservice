@@ -10,6 +10,34 @@ use Validator;
 class UserController extends Controller
 {
 
+  public function serviceStats(Request $request)
+  {
+
+  }
+
+  public function jobs(Request $request)
+  {
+    $request->validate([
+      'orderBy'       => ['regex:(completed_at|amount|status)'],
+      'order'         => ['regex:(asc|desc)'],
+      'pageSize'      => 'numeric',
+    ]);
+
+    $user           = $request->user();
+    $search         = $request->search;
+    $orderBy        = $request->orderBy ?? 'id';
+    $pageSize       = $request->pageSize;
+    $order          = $request->order ?? 'asc';
+
+    $jobs           = $user->jobs();
+    if ($search) $jobs->where(function($q) use($search){
+      $q->where('works.amount', 'LIKE', '%'.$search.'%')->orWhere('works.status', 'LIKE', '%'.$search.'%')->orWhere('works.amount_currency', 'LIKE', '%'.$search.'%')
+      ->orWhere('works.invitation_id', 'LIKE', '%'.$search.'%')->orWhere('works.service_id', 'LIKE', '%'.$search.'%');
+    });
+
+    return $jobs->orderBy($orderBy, $order)->paginate($pageSize);
+  }
+
   public function wallet(Request $request)
   {
     $user = $request->user();

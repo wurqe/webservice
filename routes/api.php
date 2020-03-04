@@ -37,33 +37,34 @@ Route::group(['middleware' => ['localization']], function(){
     // service endpoints
     Route::put('services/hire/{invitation}', 'ServiceController@hire');
     // jobs endpoints
-    Route::put('jobs/complete/{work}',  'WorkController@complete');
-    Route::post('jobs/rate/{work}',     'WorkController@rate');
-    Route::post('jobs/{work}/pay',      'WorkController@pay');
+    Route::put('jobs/complete/{work}',        'WorkController@complete');
+    Route::post('jobs/rate/{work}',           'WorkController@rate');
+    Route::post('jobs/{work}/pay',            'WorkController@pay');
 
-    Route::get('users/wallet/balance',  'UserController@balance');
-    Route::get('users/wallet/details',  'UserController@wallet');
-    Route::get('logout', 'Auth\LoginController@logout');
+    Route::get('users/wallet/balance',        'UserController@balance');
+    Route::get('users/wallet/details',        'UserController@wallet');
+    Route::get('users/jobs',                  'UserController@jobs');
+    Route::get('logout',                      'Auth\LoginController@logout');
 
-    Route::get('transactions',          'PaymentController@transactionHistory');
-    Route::post('payments/verify',      'PaymentController@verify');
-    Route::get('payments/options',      'PaymentController@options');
-    Route::put('bids',  'BidController@attemptBid');
+    Route::get('transactions',                'PaymentController@transactionHistory');
+    Route::post('payments/verify',            'PaymentController@verify');
+    Route::get('payments/options',            'PaymentController@options');
+    Route::put('bids',                        'BidController@attemptBid');
     // resources
-    Route::put('userprofileupdate', 'UserController@UserProfileUpdate');
-  Route::post('kycdocs', 'UserController@Kycdocs');
+    Route::put('userprofileupdate',           'UserController@UserProfileUpdate');
+    Route::post('kycdocs',                    'UserController@Kycdocs');
     Route::apiResources([
-      'users'             => 'UserController',
-      'settings'          => 'SettingController',
-      'categories'        => 'CategoryController',
-      'invitations'       => 'InvitationController',
-      'notifications'     => 'NotificationController',
-      'applications'      => 'ServiceApplicationController',
-      'notifications'     => 'NotificationController',
-      'jobs'              => 'WorkController',
-      'payments'          => 'PaymentController',
-      'bids'              => 'BidController',
-      'metas'             => 'MetaController',
+      'users'                           => 'UserController',
+      'settings'                        => 'SettingController',
+      'categories'                      => 'CategoryController',
+      'invitations'                     => 'InvitationController',
+      'notifications'                   => 'NotificationController',
+      'applications'                    => 'ServiceApplicationController',
+      'notifications'                   => 'NotificationController',
+      'jobs'                            => 'WorkController',
+      'payments'                        => 'PaymentController',
+      'bids'                            => 'BidController',
+      'metas'                           => 'MetaController',
     ]);
     // test resource
     Route::resource('tests', 'TestController');

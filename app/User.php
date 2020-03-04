@@ -161,6 +161,11 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasManyThrough(Work::class, Invitation::class, 'receiver_id');
   }
 
+  public function jobsCompleted()
+  {
+
+  }
+
   public function metas(){
     return $this->morphMany(Meta::class, 'metable');
   }
