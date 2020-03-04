@@ -84,6 +84,13 @@ return [
             'url'         => env('APP_URL').'/'. 'media/images/user_avatars',
         ],
 
+        'category_avatars' => [
+            'driver'      => env('FILESYSTEM_DRIVER', 'local'),
+            'root'        =>  base_path('media/images/category_avatars'),
+            'visibility'  => 'public',
+            'url'         => env('APP_URL').'/'. 'media/images/category_avatars',
+        ],
+
     ],
 
 ];
