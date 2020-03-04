@@ -66,6 +66,7 @@ Route::group(['middleware' => ['localization']], function(){
       'payments'                        => 'PaymentController',
       'bids'                            => 'BidController',
       'metas'                           => 'MetaController',
+      'reviews'                         => 'ReviewController',
     ]);
     // test resource
     Route::resource('tests', 'TestController');
