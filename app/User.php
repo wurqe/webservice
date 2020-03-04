@@ -162,9 +162,9 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function registerMediaCollections(Media $media = null){
-    $this->addMediaCollection('avatar')
+    $this->addMediaCollection('avatar')->singleFile()
     ->useDisk('user_avatars')
-    ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+    ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif'])
     ->registerMediaConversions(function(Media $media = null){
       $this->addMediaConversion('thumb')
       ->width(100)->height(100);
@@ -196,6 +196,8 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
    */
   protected $hidden = [
       'password', 'remember_token',
+      'email_verified_at',
+      'media', 'pivot'
   ];
 
   /**

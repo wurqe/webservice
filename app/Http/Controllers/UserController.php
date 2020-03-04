@@ -118,6 +118,7 @@ endif;
       $this->authorize('update', $user);
       $request->validate([]);
       $user         = $request->user();
+      $avatar       = $request->avatar;
       $updates      = $request->all();
       $keys         = array_keys($updates);
       $metas        = ['availabilty', 'account_type', 'quote', 'gender', 'state', 'city', 'country', 'address', 'phone'];
@@ -139,6 +140,10 @@ endif;
         $user->addMetas($metas_arr, $request);
         $user->load('metas');
       }
+
+      try {
+        if($avatar) $user->saveImage($avatar, 'avatar');
+      } catch (\Exception $e) {}
       return $user;
     }
 
