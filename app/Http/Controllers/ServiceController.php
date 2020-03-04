@@ -21,7 +21,8 @@ class ServiceController extends Controller
       $request->validate([
         'type'          => ['regex:(seek|provide)'],
         'search'        => '',
-        'orderBy'       => ['regex:(title)'],
+        'price_range'   => 'array',
+        'orderBy'       => ['regex:(title|description|type|payment_type|amount)'],
         'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'numeric',
       ]);
@@ -29,6 +30,7 @@ class ServiceController extends Controller
       $user           = $request->user('api');
       $user_id        = $user ? $user->id : 0;
       $search         = $request->search;
+      $price_range    = $request->price_range;
       $orderBy        = $request->orderBy ?? 'id';
       $pageSize       = $request->pageSize;
       $order          = $request->order ?? 'asc';
@@ -36,8 +38,14 @@ class ServiceController extends Controller
 
       $services = Service::where('user_id', '!=', $user_id)->with(['skills', 'category:id,name']);
 
-      if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
+      if ($search) $services->where(function($q) use($search){
+        $q->where('title', 'LIKE', '%'.$search.'%')->orWhere('title', 'description', '%'.$search.'%')
+        ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('type', 'LIKE', '%'.$search.'%')
+        ->orWhere('payment_type', 'LIKE', '%'.$search.'%');
+      });
       else $services->where('type', $type);
+
+      if($price_range) $services->whereBetween('amount', $price_range);
 
        $services = $services->distance($user)->ARating()->orderBy($orderBy, $order)->paginate($pageSize);
        foreach($services->items() as $s){
