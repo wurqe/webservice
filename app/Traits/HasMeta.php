@@ -6,28 +6,33 @@ namespace App\Traits;
  */
 trait HasMeta
 {
-  public function addMeta($check = [], $metas){
+  public function addMeta($check = [], $metas, $load = true){
     $meta = $this->metas()->updateOrCreate($check, $metas);
-    $this->load('metas');
+    if($load) $this->withMetas();
     return $meta;
   }
 
-  public function addMetas($metas, $name, $value, $callback = false){
-    $metas = $this->load(['metas' => function($q) use($name){
-      $q->where('name', $name)->latest();
-    }]);
-
-    if (count($metas->metas) > 0) {
-        $option = $metas->metas->first();
-        $option->value = $value;
-        $option->save();
-    } else {
-      $this->metas()->create([
-        'name' => $name,
-        'value' => $value,
-      ]);
+  public function addMetas($metas_arr, $request, $callback = false){
+    foreach ($metas_arr as $key => $value) {
+      $index = $metas_arr[$key];
+      $update = ['name' => $index, 'value' => $request->$index];
+      $this->addMeta($update, $update, false);
     }
-    if($callback) $callback($this);
+  }
+
+  public function withMetas()
+  {
+    $metas = $this->metas;
+    $userMeta = [];
+    $metas->map(function($meta) use(&$userMeta){
+      $userMeta[$meta->name] = $meta->value;
+    });
+    // $userMeta['verifiedEmail'] = true;
+    // $userMeta['verifiedPhone'] = true;
+    // $userMeta['verifiedIdentity'] = true;
+    // $userMeta['verifiedAddress'] = true;
+    $this->meta = $userMeta;
+    $this->makeHidden(['metas']);
     return $this;
   }
 }

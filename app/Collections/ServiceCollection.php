@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Collection;
 class ServiceCollection extends Collection
 {
     /**
-     * append users avatar.
+     * append service attachments.
      *
      * @return void
      */
     public function withAttachments()
     {
         $this->each->withImageUrl(null, 'attachments');
+    }
+
+    public function withMetas()
+    {
+        $this->each->withMetas();
     }
 }

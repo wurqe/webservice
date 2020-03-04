@@ -138,6 +138,14 @@ class Work extends Model implements ReviewRateable, Product, Taxable, Editable
     return $this->belongsTo(Invitation::class);
   }
 
+  public function ratingPercent($max = 5)
+  {
+      $ratings = $this->ratings();
+      $quantity = $ratings->count();
+      $total = $ratings->selectRaw('SUM(rating) as total')->pluck('total')[0];
+      return ($quantity * $max) > 0 ? $total / (($quantity * $max) / 100) : 0;
+  }
+
   public function rated(){
     return $this->morphOne(Rating::class, 'reviewrateable');
   }

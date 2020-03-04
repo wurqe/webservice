@@ -94,6 +94,7 @@ class PaymentController extends Controller
       $request->validate([
         'amount'        => 'required|numeric',
       ]);
+      \Request::instance()->query->set('trxref', $request->trxref);
       $amount           = $request->amount;
       $user             = $request->user();
       $data             = ["amount" => $amount, "email" => $user->email];

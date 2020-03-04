@@ -157,14 +157,74 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->hasMany(Setting::class);
   }
 
+  public function jobs(){
+    return $this->hasManyThrough(Work::class, Invitation::class, 'receiver_id');
+  }
+
+  public function jobsCompleted()
+  {
+    return $this->jobs()->where('works.status', 'completed');
+  }
+
+  public function jobsCompletionRate()
+  {
+    $jobs           = $this->jobs();
+    $total          = $jobs->count();
+    $totalCompleted = $jobs->where('works.status', 'completed')->count();
+    return $this->percentage($totalCompleted, $total);
+  }
+
+  public function InvitationsResponseRate()
+  {
+    $invitations    = $this->received_invitations();
+    $total          = $invitations->count();
+    $Attempted      = $invitations->where('status', '!=', 'pending')->count();
+    return $this->percentage($Attempted, $total);
+  }
+
+  public function CompliantRate()
+  {
+    $ratings        = $this->reviews()->selectRaw('rating');
+    $total          = $ratings->count();
+    $minRating      = $ratings->where('rating', '<', '3')->count();
+    return $this->percentage($minRating, $total);
+  }
+
+  public function percentage($count, $total){
+    return (int)(($count/$total) * 100);
+  }
+
+  public function avgRate($count, $total){
+    // return (int)(($count/$total) * 100);
+  }
+
+  public function reviews()
+  {
+    $jobs           = $this->jobs()->pluck('works.id');
+    return \Codebyray\ReviewRateable\Models\Rating::where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+  }
+
+  public function withRating(){
+    $ratings        = $this->reviews()->selectRaw('rating');
+    $quantity       = $ratings->count();
+    $total    = $ratings->sum('rating');
+    $this->rating = $this->avgRating($total, $quantity);
+    return $this;
+  }
+
+  public function avgRating($total, $quantity, $max = 5)
+  {
+    return $total/$quantity;
+  }
+
   public function metas(){
     return $this->morphMany(Meta::class, 'metable');
   }
 
   public function registerMediaCollections(Media $media = null){
-    $this->addMediaCollection('avatar')
+    $this->addMediaCollection('avatar')->singleFile()
     ->useDisk('user_avatars')
-    ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+    ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif'])
     ->registerMediaConversions(function(Media $media = null){
       $this->addMediaConversion('thumb')
       ->width(100)->height(100);
@@ -196,6 +256,8 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
    */
   protected $hidden = [
       'password', 'remember_token',
+      'email_verified_at',
+      'media', 'pivot'
   ];
 
   /**
