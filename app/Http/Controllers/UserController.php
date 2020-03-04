@@ -92,7 +92,7 @@ endif;
      */
     public function show(User $user)
     {
-
+      return $user->withMetas();
     }
 
     /**
@@ -121,7 +121,7 @@ endif;
       $avatar       = $request->avatar;
       $updates      = $request->all();
       $keys         = array_keys($updates);
-      $metas        = ['availabilty', 'account_type', 'quote', 'gender', 'state', 'city', 'country', 'address', 'phone'];
+      $metas        = ['availabilty', 'account_type', 'quote', 'gender', 'state', 'city', 'country', 'address', 'phone', 'phone_code'];
       $prop         = ['firstname', 'lastname', 'lng', 'lat'];
       $metas_arr    = array_intersect($keys, $metas);
       $prop_arr     = array_intersect($keys, $prop);
@@ -138,7 +138,7 @@ endif;
       // if meta
       if ($metas_arr) {
         $user->addMetas($metas_arr, $request);
-        $user->load('metas');
+        $user->withMetas();
       }
 
       try {

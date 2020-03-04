@@ -8,7 +8,7 @@ trait HasMeta
 {
   public function addMeta($check = [], $metas, $load = true){
     $meta = $this->metas()->updateOrCreate($check, $metas);
-    if($load) $this->load('metas');
+    if($load) $this->withMetas();
     return $meta;
   }
 
@@ -18,17 +18,17 @@ trait HasMeta
       $update = ['name' => $index, 'value' => $request->$index];
       $this->addMeta($update, $update, false);
     }
-
-    // $mts = [];
-    // foreach ($metass as $metas) {
-    //   $met = ['name' => 'timeframe', 'value' => $request->timeframe];
-    //   $mts[] = $this->addMeta($metas['check'], $metas['metas']);
-    // }
-    // return $mts;
   }
 
-  public function updateOrCreateMany()
+  public function withMetas()
   {
-
+    $metas = $this->metas;
+    $userMeta = [];
+    $metas->map(function($meta) use(&$userMeta){
+      $userMeta[$meta->name] = $meta->value;
+    });
+    $this->meta = $userMeta;
+    $this->makeHidden(['metas']);
+    return $this;
   }
 }
