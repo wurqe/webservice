@@ -27,6 +27,10 @@ trait HasMeta
     $metas->map(function($meta) use(&$userMeta){
       $userMeta[$meta->name] = $meta->value;
     });
+    // $userMeta['verifiedEmail'] = true;
+    // $userMeta['verifiedPhone'] = true;
+    // $userMeta['verifiedIdentity'] = true;
+    // $userMeta['verifiedAddress'] = true;
     $this->meta = $userMeta;
     $this->makeHidden(['metas']);
     return $this;
