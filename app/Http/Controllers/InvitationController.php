@@ -87,7 +87,8 @@ class InvitationController extends Controller
      */
     public function show(Invitation $invitation)
     {
-        //
+      $this->authorize('view', $invitation);
+      return $invitation->load('bids');
     }
 
     /**
