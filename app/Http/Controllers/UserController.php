@@ -121,7 +121,7 @@ endif;
      */
     public function show(User $user)
     {
-      return $user->withMetas();
+      return $user->withMetas()->withRating();
     }
 
     /**

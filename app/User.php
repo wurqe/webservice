@@ -184,8 +184,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function CompliantRate()
   {
-    $jobs           = $this->jobs()->pluck('works.id');//->whereHas('ratings')->with('ratings');
-    $ratings        = \Codebyray\ReviewRateable\Models\Rating::selectRaw('rating')->where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+    $ratings        = $this->reviews();
     $total          = $ratings->count();
     $minRating      = $ratings->where('rating', '<', '3')->count();
     return $this->percentage($minRating, $total);
@@ -193,6 +192,29 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
 
   public function percentage($count, $total){
     return (int)(($count/$total) * 100);
+  }
+
+  public function avgRate($count, $total){
+    // return (int)(($count/$total) * 100);
+  }
+
+  public function reviews()
+  {
+    $jobs           = $this->jobs()->pluck('works.id');
+    return \Codebyray\ReviewRateable\Models\Rating::selectRaw('rating')->where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+  }
+
+  public function withRating(){
+    $ratings        = $this->reviews();
+    $quantity       = $ratings->count();
+    $total    = $ratings->sum('rating');
+    $this->rating = $this->avgRating($total, $quantity);
+    return $this;
+  }
+
+  public function avgRating($total, $quantity, $max = 5)
+  {
+    return $total/$quantity;
   }
 
   public function metas(){
