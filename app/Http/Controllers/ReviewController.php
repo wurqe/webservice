@@ -18,9 +18,11 @@ class ReviewController extends Controller
         'orderBy'       => ['regex:(rating|title|body|author_id)'],
         'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'numeric',
+        'user_id'       => 'int|required',
       ]);
 
-      $user           = $request->user();
+      $user_id        = $request->user_id;
+      $user           = \App\User::findOrFail($user_id);
       $search         = $request->search;
       $orderBy        = $request->orderBy ?? 'id';
       $pageSize       = $request->pageSize;
