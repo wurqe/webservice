@@ -21,7 +21,9 @@ class ServiceController extends Controller
       $request->validate([
         'type'          => ['regex:(seek|provide)'],
         'search'        => '',
-        'orderBy'       => ['regex:(title)'],
+        'category_id'   => 'int',
+        'price_range'   => 'array',
+        'orderBy'       => ['regex:(title|description|type|payment_type|amount)'],
         'order'         => ['regex:(asc|desc)'],
         'pageSize'      => 'numeric',
       ]);
@@ -29,6 +31,8 @@ class ServiceController extends Controller
       $user           = $request->user('api');
       $user_id        = $user ? $user->id : 0;
       $search         = $request->search;
+      $price_range    = $request->price_range;
+      $category_id    = $request->category_id;
       $orderBy        = $request->orderBy ?? 'id';
       $pageSize       = $request->pageSize;
       $order          = $request->order ?? 'asc';
@@ -36,23 +40,21 @@ class ServiceController extends Controller
 
       $services = Service::where('user_id', '!=', $user_id)->with(['skills', 'category:id,name']);
 
-      if ($search) $services->where('title', 'LIKE', '%'.$search.'%');
+      if ($search) $services->where(function($q) use($search){
+        $q->where('title', 'LIKE', '%'.$search.'%')->orWhere('title', 'description', '%'.$search.'%')
+        ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('type', 'LIKE', '%'.$search.'%')
+        ->orWhere('payment_type', 'LIKE', '%'.$search.'%');
+      });
       else $services->where('type', $type);
 
-       $services = $services->distance($user)->ARating()->orderBy($orderBy, $order)->paginate($pageSize);
-       return $services->map(function($s) use(&$i){
-         $i = 1;
-         if ($s->type == 'provide') {
-           $s->works()->get()->map(function($w) use($s, &$i){
-             $s->avgRating = ($s->avgRating + $w->averageRating()->first()) / $i;
-             $s->ratingCount = $i;
-             $i++;
-           });
-           $s->withImageUrl(null, 'attachments', true);
-         }
+      if($price_range) $services->whereBetween('amount', $price_range);
+      if($category_id) $services->where('category_id', $category_id);
 
-         return $s;
-       });
+       $services = $services->distance($user)->orderBy($orderBy, $order)->paginate($pageSize);
+       foreach($services->items() as $s){
+         $s->withImageUrl(null, 'attachments', true)->withRating();
+       }
+       return $services;
     }
 
     /**

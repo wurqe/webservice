@@ -42,27 +42,30 @@ class Service extends Model implements HasMedia, Editable
     }
   }
 
-  public function scopeARating($query)
-  {
-    // $query->with('avgRating');
-    // $query->with(['works'])->whereHas('works', function($q){
-    //   $q->where('type', 'provide')
-    //   ->selectRaw("AVG(works.rating) as avs");
-    //   // ->with('ratings');
-    // });
-  }
-
   public function withAvgRating()
   {
-    return $this->load(['ratings']);// => function($q){
-      // $q->selectRaw('AVG(rating) as averageReviewRateable');
-    // }]);
+    return $this->load(['ratings']);
   }
 
-  // public function avgRating()
-  // {
-  //   return $this->ratings();//->selectRaw('avg(rating) as avgs');
-  // }
+  public function reviews()
+  {
+    $jobs           = $this->works()->pluck('works.id');
+    return \Codebyray\ReviewRateable\Models\Rating::where('reviewrateable_type', Work::class)->whereIn('reviewrateable_id', $jobs);
+  }
+
+  public function withRating(){
+    $ratings            = $this->reviews()->selectRaw('rating');
+    $quantity           = $ratings->count();
+    $total              = $ratings->sum('rating');
+    $this->avgRating    = $this->calcAvgRating($total, $quantity);
+    $this->ratingCount  = $quantity;
+    return $this;
+  }
+
+  public function calcAvgRating($total, $quantity, $max = 5)
+  {
+    return $total ? $total/$quantity : 0;
+  }
 
   public function calculateAmount()
   {
@@ -111,11 +114,6 @@ class Service extends Model implements HasMedia, Editable
   public function works(){
     return $this->hasMany(Work::class);
   }
-
-  // public function ratings(){
-  //   return $this->hasManyThrough(Rating::class, Work::class, 'id', 'reviewrateable_id')->where('reviewrateable_type', Work::class);
-  //   // return $this->hasManyThrough(Work::class, Rating::class, 'reviewrateable');
-  // }
 
   public function newCollection(array $services = [])
   {

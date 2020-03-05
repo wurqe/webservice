@@ -12,9 +12,30 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $request->validate([
+        'orderBy'       => ['regex:(name)'],
+        'order'         => ['regex:(asc|desc)'],
+        'pageSize'      => 'numeric',
+      ]);
+
+      $user           = $request->user();
+      $search         = $request->search;
+      $orderBy        = $request->orderBy ?? 'id';
+      $pageSize       = $request->pageSize;
+      $order          = $request->order ?? 'asc';
+
+      $categories     = Category::withCount('services');
+      if ($search) $categories->where(function($q) use($search){
+        $q->where('name', 'LIKE', '%'.$search.'%');
+      });
+
+      $categories = $categories->orderBy($orderBy, $order)->paginate($pageSize);
+      foreach ($categories->items() as $cat) {
+        $cat->withImageUrl(null, 'avatar');
+      }
+      return $categories;
     }
 
     /**

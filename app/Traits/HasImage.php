@@ -16,17 +16,17 @@ trait HasImage
   }
 
   public function withImageUrl($medias = null, $collection, $is_array = false){
-    if (!$medias) $medias = $this->getMedia($collection);
+    if (!$medias) $medias = $is_array ? $this->getMedia($collection) : $this->getFirstMedia($collection);
 
     if ($medias) {
-      $images;
+      $images = [];
       if ($is_array) {
         $images = [];
         for ($i=0; $i < sizeof($medias); $i++) {
           $images[] = $this->imageObj($medias[$i]);
         }
       } else {
-        $images = $this->imageObj($medias[0]);
+        $images = $this->imageObj($medias);
       }
       if ($images) $this->$collection = $images;
     }
