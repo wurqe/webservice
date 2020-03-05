@@ -16,6 +16,7 @@ class UserController extends Controller
       'search'        => '',
       'category_id'   => 'int',
       'price_range'   => 'array',
+      'extras'        => 'array',
       'orderBy'       => ['regex:(title|description|type|payment_type|amount)'],
       'order'         => ['regex:(asc|desc)'],
       'pageSize'      => 'numeric',
@@ -26,6 +27,7 @@ class UserController extends Controller
     $search         = $request->search;
     $price_range    = $request->price_range;
     $category_id    = $request->category_id;
+    $extras         = $request->extras;
     $orderBy        = $request->orderBy ?? 'id';
     $pageSize       = $request->pageSize;
     $order          = $request->order ?? 'asc';
@@ -42,6 +44,14 @@ class UserController extends Controller
 
     if($price_range) $services->whereBetween('amount', $price_range);
     if($category_id) $services->where('category_id', $category_id);
+
+    if ($extras) {
+      foreach ($extras as $key => $extra) {
+        $services->when($extra == 'application_count', function($q) {
+          $q->withCount('applications');
+        });
+      }
+    }
 
      $services = $services->distance($user)->orderBy($orderBy, $order)->paginate($pageSize);
      foreach($services->items() as $s){
