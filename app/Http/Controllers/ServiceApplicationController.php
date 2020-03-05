@@ -18,10 +18,12 @@ class ServiceApplicationController extends Controller
       $request->validate([
         'type'          => ['regex:(received|sent)'],
         'pageSize'      => 'int',
+        'service_id'    => 'int',
       ]);
 
       $user           = $request->user();
       $user_id        = $user ? $user->id : 0;
+      $service_id     = $request->service_id;
       $pageSize       = $request->pageSize;
       $type           = $request->type ?? 'received';
 
@@ -30,6 +32,8 @@ class ServiceApplicationController extends Controller
       } else {
         $applications = $user->received_applications();
       }
+
+      if($service_id) $applications->where('service_id', $service_id);
 
       return $applications->paginate($pageSize);
     }

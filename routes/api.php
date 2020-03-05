@@ -40,20 +40,23 @@ Route::group(['middleware' => ['localization']], function(){
     Route::put('jobs/complete/{work}',        'WorkController@complete');
     Route::post('jobs/rate/{work}',           'WorkController@rate');
     Route::post('jobs/{work}/pay',            'WorkController@pay');
-
+    // user endpoints
     Route::get('users/wallet/balance',        'UserController@balance');
     Route::get('users/wallet/details',        'UserController@wallet');
     Route::get('users/jobs',                  'UserController@jobs');
     Route::get('users/services/stats',        'UserController@serviceStats');
+    Route::get('users/services',              'UserController@services');
+    Route::get('users/extras',                'UserController@extras');
+    Route::get('whoami',                      'UserController@whoami');
     Route::get('logout',                      'Auth\LoginController@logout');
-
+    Route::put('userprofileupdate',           'UserController@UserProfileUpdate');
+    Route::post('kycdocs',                    'UserController@Kycdocs');
+    // payment
     Route::get('transactions',                'PaymentController@transactionHistory');
     Route::post('payments/verify',            'PaymentController@verify');
     Route::get('payments/options',            'PaymentController@options');
     Route::put('bids',                        'BidController@attemptBid');
     // resources
-    Route::put('userprofileupdate',           'UserController@UserProfileUpdate');
-    Route::post('kycdocs',                    'UserController@Kycdocs');
     Route::apiResources([
       'users'                           => 'UserController',
       'settings'                        => 'SettingController',
@@ -67,9 +70,8 @@ Route::group(['middleware' => ['localization']], function(){
       'bids'                            => 'BidController',
       'metas'                           => 'MetaController',
       'reviews'                         => 'ReviewController',
+      'tests'                           => 'TestController',
     ]);
-    // test resource
-    Route::resource('tests', 'TestController');
   });
   Route::get('users/count', 'TestController@userCount');
   Route::get('app/reset/0000', 'TestController@reset');

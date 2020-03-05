@@ -9,11 +9,102 @@ use Validator;
 
 class UserController extends Controller
 {
+  public function extras(Request $request)
+  {
+    $request->validate([
+      'extras'        => 'array|required',
+      'user_id'       => 'int|required',
+    ]);
+
+    $user_id        = $request->user_id;
+    $extras         = $request->extras;
+    $user           = \App\User::findOrFail($user_id);
+    $query          = $user->query();
+    $res            = [];
+
+    foreach ($extras as $extra) {
+      switch ($extra) {
+        case 'jobs_completed_count':
+          $res[$extra] = $user->jobsCompleted()->count();
+          break;
+        case 'complaint_rate':
+          $res[$extra] = $user->ComplaintRate();
+          break;
+        case 'completion_rate':
+          $res[$extra] = $user->jobsCompletionRate();
+          break;
+        case 'response_rate':
+          $res[$extra] = $user->InvitationsResponseRate();
+          break;
+        case 'rating':
+          $res[$extra] = $user->getRating();
+          break;
+      }
+    }
+    return $res;
+  }
+
+  public function services(Request $request)
+  {
+    $request->validate([
+      'type'          => ['regex:(seek|provide)'],
+      'search'        => '',
+      'category_id'   => 'int',
+      'price_range'   => 'array',
+      'extras'        => 'array',
+      'orderBy'       => ['regex:(title|description|type|payment_type|amount)'],
+      'order'         => ['regex:(asc|desc)'],
+      'pageSize'      => 'numeric',
+    ]);
+
+    $user           = $request->user('api');
+    $user_id        = $user ? $user->id : 0;
+    $search         = $request->search;
+    $price_range    = $request->price_range;
+    $category_id    = $request->category_id;
+    $extras         = $request->extras;
+    $orderBy        = $request->orderBy ?? 'id';
+    $pageSize       = $request->pageSize;
+    $order          = $request->order ?? 'asc';
+    $type           = $request->type ?? 'seek';
+
+    $services = $user->services()->with(['skills', 'category:id,name']);
+
+    if ($search) $services->where(function($q) use($search){
+      $q->where('title', 'LIKE', '%'.$search.'%')->orWhere('title', 'description', '%'.$search.'%')
+      ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('type', 'LIKE', '%'.$search.'%')
+      ->orWhere('payment_type', 'LIKE', '%'.$search.'%');
+    });
+    else $services->where('type', $type);
+
+    if($price_range) $services->whereBetween('amount', $price_range);
+    if($category_id) $services->where('category_id', $category_id);
+
+    if ($extras) {
+      foreach ($extras as $key => $extra) {
+        $services->when($extra == 'application_count', function($q) {
+          $q->withCount('applications');
+        });
+      }
+    }
+
+     $services = $services->distance($user)->orderBy($orderBy, $order)->paginate($pageSize);
+     foreach($services->items() as $s){
+       $s->withImageUrl(null, 'attachments', true)->withRating();
+     }
+     // dd($services->getQueryLog());
+     return $services;
+  }
+
+  public function whoami(Request $request)
+  {
+    return $request->user();
+  }
 
   public function serviceStats(Request $request)
   {
     $user           = $request->user();
-    return ['completionRate' => $user->jobsCompletionRate(), 'responseRate' => $user->InvitationsResponseRate(), 'compliantRate' => $user->CompliantRate()];
+    return ['completionRate' => $user->jobsCompletionRate(), 'responseRate' => $user->InvitationsResponseRate(), 'compliantRate' => $user->ComplaintRate()];
   }
 
   public function jobs(Request $request)
@@ -121,7 +212,7 @@ endif;
      */
     public function show(User $user)
     {
-      return $user->withMetas()->withRating();
+      return $user->withMetas()->withImageUrl(null, 'avatar')->withRating();
     }
 
     /**
