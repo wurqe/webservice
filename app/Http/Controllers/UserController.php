@@ -9,6 +9,52 @@ use Validator;
 
 class UserController extends Controller
 {
+  public function services(Request $request)
+  {
+    $request->validate([
+      'type'          => ['regex:(seek|provide)'],
+      'search'        => '',
+      'category_id'   => 'int',
+      'price_range'   => 'array',
+      'orderBy'       => ['regex:(title|description|type|payment_type|amount)'],
+      'order'         => ['regex:(asc|desc)'],
+      'pageSize'      => 'numeric',
+    ]);
+
+    $user           = $request->user('api');
+    $user_id        = $user ? $user->id : 0;
+    $search         = $request->search;
+    $price_range    = $request->price_range;
+    $category_id    = $request->category_id;
+    $orderBy        = $request->orderBy ?? 'id';
+    $pageSize       = $request->pageSize;
+    $order          = $request->order ?? 'asc';
+    $type           = $request->type ?? 'seek';
+
+    $services = $user->services()->with(['skills', 'category:id,name']);
+
+    if ($search) $services->where(function($q) use($search){
+      $q->where('title', 'LIKE', '%'.$search.'%')->orWhere('title', 'description', '%'.$search.'%')
+      ->orWhere('amount', 'LIKE', '%'.$search.'%')->orWhere('type', 'LIKE', '%'.$search.'%')
+      ->orWhere('payment_type', 'LIKE', '%'.$search.'%');
+    });
+    else $services->where('type', $type);
+
+    if($price_range) $services->whereBetween('amount', $price_range);
+    if($category_id) $services->where('category_id', $category_id);
+
+     $services = $services->distance($user)->orderBy($orderBy, $order)->paginate($pageSize);
+     foreach($services->items() as $s){
+       $s->withImageUrl(null, 'attachments', true)->withRating();
+     }
+     // dd($services->getQueryLog());
+     return $services;
+  }
+
+  public function whoami(Request $request)
+  {
+    return $request->user();
+  }
 
   public function serviceStats(Request $request)
   {
