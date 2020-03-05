@@ -127,7 +127,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        //
+      return $service->withImageUrl(null, 'avatar')->withMetas();
     }
 
     /**
