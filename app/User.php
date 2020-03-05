@@ -182,7 +182,7 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
     return $this->percentage($Attempted, $total);
   }
 
-  public function CompliantRate()
+  public function ComplaintRate()
   {
     $ratings        = $this->reviews()->selectRaw('rating');
     $total          = $ratings->count();
@@ -205,11 +205,15 @@ class User extends Authenticatable implements Wallet, Customer, HasMedia, Taxabl
   }
 
   public function withRating(){
+    $this->rating   = $this->getRating();
+    return $this;
+  }
+
+  public function getRating(){
     $ratings        = $this->reviews()->selectRaw('rating');
     $quantity       = $ratings->count();
     $total          = $ratings->sum('rating');
-    $this->rating   = $this->avgRating($total, $quantity);
-    return $this;
+    return $this->avgRating($total, $quantity);
   }
 
   public function avgRating($total, $quantity, $max = 5)

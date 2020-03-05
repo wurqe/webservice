@@ -46,6 +46,7 @@ Route::group(['middleware' => ['localization']], function(){
     Route::get('users/jobs',                  'UserController@jobs');
     Route::get('users/services/stats',        'UserController@serviceStats');
     Route::get('users/services',              'UserController@services');
+    Route::get('users/extras',                'UserController@extras');
     Route::get('whoami',                      'UserController@whoami');
     Route::get('logout',                      'Auth\LoginController@logout');
     Route::put('userprofileupdate',           'UserController@UserProfileUpdate');

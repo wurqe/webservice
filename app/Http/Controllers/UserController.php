@@ -9,6 +9,41 @@ use Validator;
 
 class UserController extends Controller
 {
+  public function extras(Request $request)
+  {
+    $request->validate([
+      'extras'        => 'array|required',
+      'user_id'       => 'int|required',
+    ]);
+
+    $user_id        = $request->user_id;
+    $extras         = $request->extras;
+    $user           = \App\User::findOrFail($user_id);
+    $query          = $user->query();
+    $res            = [];
+
+    foreach ($extras as $extra) {
+      switch ($extra) {
+        case 'jobs_completed_count':
+          $res[$extra] = $user->jobsCompleted()->count();
+          break;
+        case 'complaint_rate':
+          $res[$extra] = $user->ComplaintRate();
+          break;
+        case 'completion_rate':
+          $res[$extra] = $user->jobsCompletionRate();
+          break;
+        case 'response_rate':
+          $res[$extra] = $user->InvitationsResponseRate();
+          break;
+        case 'rating':
+          $res[$extra] = $user->getRating();
+          break;
+      }
+    }
+    return $res;
+  }
+
   public function services(Request $request)
   {
     $request->validate([
@@ -69,7 +104,7 @@ class UserController extends Controller
   public function serviceStats(Request $request)
   {
     $user           = $request->user();
-    return ['completionRate' => $user->jobsCompletionRate(), 'responseRate' => $user->InvitationsResponseRate(), 'compliantRate' => $user->CompliantRate()];
+    return ['completionRate' => $user->jobsCompletionRate(), 'responseRate' => $user->InvitationsResponseRate(), 'compliantRate' => $user->ComplaintRate()];
   }
 
   public function jobs(Request $request)
