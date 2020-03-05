@@ -212,7 +212,7 @@ endif;
      */
     public function show(User $user)
     {
-      return $user->withMetas()->withRating();
+      return $user->withMetas()->withImageUrl(null, 'avatar')->withRating();
     }
 
     /**
