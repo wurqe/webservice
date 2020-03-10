@@ -56,7 +56,7 @@ class LoginController extends Controller
 
       $email          = $request->email;
       $name           = $request->name;
-      if (!$email || !$name) return response()->json(['errors'=>trans('validation.either_required')], 422);
+      if (!$email && !$name) return response()->json(['errors'=>trans('validation.either_required')], 422);
       $password       = $request->password;
       $lat            = $request->lat;
       $lng            = $request->lng;
